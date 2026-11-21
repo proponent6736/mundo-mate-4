@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="theme-color" content="#3aa0ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="MundoMate: Guerreros del Cálculo - Matemáticas 4º Primaria (Edelvives)">
+  <title>Mundo Mate 4º - ¡Aprende Matemáticas Jugando!</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Header de navegación superior -->
+    <header class="top-bar">
+      <div class="logo-area" onclick="app.showScreen('home')">
+        <span class="logo-icon">🚀</span>
+        <div class="logo-text">
+          <span class="logo-title">Mundo<span class="highlight">Mate</span></span>
+          <span class="logo-badge">Edelvives 4º</span>
+        </div>
+      </div>
+
+      <div class="stats-area">
+        <div class="stat-pill power-pill" title="Nivel de Poder de tu Guerrero del Cálculo">
+          <span class="stat-icon">⚡</span>
+          <span id="power-level-count">550</span>
+          <span class="stat-unit">Ki</span>
+        </div>
+        <div class="stat-pill stars-pill" title="Tus estrellas de hoy">
+          <span class="stat-icon">⭐</span>
+          <span id="star-count">0</span>
+        </div>
+        <div class="stat-pill coins-pill" title="Tus monedas para la tienda">
+          <span class="stat-icon coin-icon">
+            <svg class="coin-svg" viewBox="0 0 24 24" aria-label="Monedas">
+              <circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+              <circle cx="12" cy="12" r="7.5" fill="#fbbf24" stroke="#d97706" stroke-width="1.2"/>
+              <text x="12" y="16.5" font-family="'Fredoka', 'Nunito', sans-serif" font-size="12" font-weight="900" fill="#78350f" text-anchor="middle">M</text>
+            </svg>
+          </span>
+          <span id="coin-count">50</span>
+        </div>
+        <div class="stat-pill streak-pill" title="Racha de días seguidos entrenando">
+          <span class="stat-icon">🔥</span>
+          <span id="streak-count">1</span>
+          <span class="stat-unit">días</span>
+        </div>
+        <button id="btn-sound-toggle" class="icon-btn" onclick="app.toggleSound()" title="Activar/Desactivar sonido">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <button type="button" class="header-profile-btn" onclick="app.openProfileModal()" title="Menú de Perfil">
+          <span class="profile-btn-icon">👤</span>
+          <span class="profile-btn-label">Perfil</span>
+        </button>
+        <div class="avatar-mini" onclick="app.openProfileModal()" title="Menú de Perfil y Avatar">
+          <div id="mini-avatar-display" class="mini-avatar-preview"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PANTALLA PRINCIPAL: MENÚ DE ACCESO -->
+    <main id="screen-home" class="screen active">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <!-- PANEL INTERACTIVO DE SELECCIÓN DE DIFICULTAD -->
+          <div class="difficulty-selector-panel">
+            <div class="diff-panel-header">
+              <span class="diff-panel-title">🎯 Selecciona tu Nivel:</span>
+              <span class="diff-hint-text">💡 También se adapta automáticamente con tus respuestas</span>
+            </div>
+            <div class="diff-buttons-group">
+              <button class="diff-btn" data-lvl="1" onclick="app.setDifficultyLevel(1)" title="Nivel 1: Básico (Gravedad x1)">
+                <span class="diff-stars">⭐</span>
+                <span class="diff-title">Básico</span>
+                <span class="diff-gravity">Gravedad x1</span>
+              </button>
+              <button class="diff-btn active" data-lvl="2" onclick="app.setDifficultyLevel(2)" title="Nivel 2: Intermedio (Gravedad x10)">
+                <span class="diff-stars">⭐⭐</span>
+                <span class="diff-title">Intermedio</span>
+                <span class="diff-gravity">Gravedad x10</span>
+              </button>
+              <button class="diff-btn" data-lvl="3" onclick="app.setDifficultyLevel(3)" title="Nivel 3: Avanzado (Gravedad x50)">
+                <span class="diff-stars">⭐⭐⭐</span>
+                <span class="diff-title">Avanzado</span>
+                <span class="diff-gravity">Gravedad x50</span>
+              </button>
+              <button class="diff-btn" data-lvl="4" onclick="app.setDifficultyLevel(4)" title="Nivel 4: Experto (Gravedad x100)">
+                <span class="diff-stars">⭐⭐⭐⭐</span>
+                <span class="diff-title">Experto</span>
+                <span class="diff-gravity">Gravedad x100</span>
+              </button>
+            </div>
+          </div>
+          <h1 id="welcome-msg">¡Hola, Campeón! 🌟</h1>
+          <p class="hero-subtitle">¿Listo para entrenar tu cerebro hoy? ¡Completa tu sesión de 15 minutos o supera tus récords!</p>
+          <div class="hero-actions">
+            <button class="btn-primary-big pulse-effect" onclick="app.startDailySession()">
+              <span class="btn-icon">⚡</span>
+              <div class="btn-text-group">
+                <span class="btn-title">SESIÓN DEL DÍA</span>
+                <span class="btn-desc">12 Retos adaptados (15 min)</span>
+              </div>
+            </button>
+            <button class="btn-secondary-big" onclick="app.startSpeedSession()">
+              <span class="btn-icon">⏱️</span>
+              <div class="btn-text-group">
+                <span class="btn-title">GIMNASIO MENTAL</span>
+                <span class="btn-desc">¡60 segundos a tope!</span>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div class="hero-mascot-card">
+          <div id="home-avatar-canvas" class="mascot-interactive" onclick="app.petMascot()"></div>
+          <div class="speech-bubble" id="mascot-speech">¡Toca sobre mí para saludar! 👋</div>
+          <div class="hero-warrior-profile" id="hero-warrior-profile" onclick="app.openProfileModal()" title="Toca para abrir tu Menú de Perfil" style="cursor: pointer;">
+            <div class="warrior-power-badge">
+              <span class="power-bolt">⚡</span>
+              <span class="power-val" id="home-power-val">550 Ki</span>
+            </div>
+            <div class="warrior-rank-title" id="home-rank-title">Modo Aprendiz</div>
+            <div class="warrior-archetype-tag" id="home-warrior-archetype"></div>
+            <div class="warrior-progress-bar">
+              <div class="warrior-progress-fill" id="home-power-fill" style="width: 25%;"></div>
+            </div>
+            <div class="warrior-progress-sub" id="home-power-sub">550 / 1.000 Ki para Modo Destello</div>
+            <div class="profile-card-hint">👤 Ver Perfil →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DE UNIDADES: TEMARIO OFICIAL EDELVIVES "ESTO ES LO MÁS" -->
+      <section class="modules-section">
+        <div class="section-header">
+          <h2>🗺️ Misiones Matemáticas de 4º de Primaria</h2>
+          <span class="section-tag">Libro: "Esto es lo más" · Editorial Edelvives</span>
+        </div>
+
+        <div class="modules-grid">
+          <!-- MISIÓN DEDICADA: TABLAS DE MULTIPLICAR -->
+          <div class="module-card card-tables" onclick="app.openTablesModal()">
+            <div class="card-badge highlight-tables-badge">⚡ ¡Afianza las Tablas!</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">✖️⚡</span>
+            </div>
+            <h3>Misión: Tablas de Multiplicar</h3>
+            <p>¡Domina del 1 al 10! Practica tablas individuales (como el 7 o el 8) o el gran reto con todas mezcladas.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-tables"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Káiser Blitz</span>
+                <span class="villain-badge-state pending" id="state-villain-tables">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-tables" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-tables">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Super Reto ✖️</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.openTablesModal()">¡A por las Tablas! →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 1 -->
+          <div class="module-card card-u1" onclick="app.startTopicSession('unit1')">
+            <div class="card-badge">U1 · ODS 15</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🌍🔢</span>
+            </div>
+            <h3>1. La Tierra en cifras</h3>
+            <p>Números de 4 y 5 cifras, descomposición (DM, UM, C, D, U), valor posicional, comparar y aproximar.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit1"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Lord Cero</span>
+                <span class="villain-badge-state pending" id="state-villain-unit1">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit1" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit1">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit1')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 2 -->
+          <div class="module-card card-u2" onclick="app.startTopicSession('unit2')">
+            <div class="card-badge">U2 · ODS 16</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🎲🃏</span>
+            </div>
+            <h3>2. ¿Echamos una partida?</h3>
+            <p>Sumas y restas con llevadas de varias cifras, operaciones inversas y la prueba de la resta.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit2"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Dr. Restas</span>
+                <span class="villain-badge-state pending" id="state-villain-unit2">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit2" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit2">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit2')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 3 -->
+          <div class="module-card card-u3" onclick="app.startTopicSession('unit3')">
+            <div class="card-badge">U3 · ODS 4</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🎭🎟️</span>
+            </div>
+            <h3>3. ¡Que empiece la función!</h3>
+            <p>Tablas, multiplicación por 1 y 2 cifras y propiedades conmutativa, asociativa y distributiva.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit3"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">General Multiplicón</span>
+                <span class="villain-badge-state pending" id="state-villain-unit3">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit3" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit3">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit3')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 4 -->
+          <div class="module-card card-u4" onclick="app.startTopicSession('unit4')">
+            <div class="card-badge">U4 · ODS 17</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🕵️‍♂️🔐</span>
+            </div>
+            <h3>4. Mensajes cifrados</h3>
+            <p>Términos de la división, dividir por 1 y 2 cifras, jerarquía y operaciones combinadas.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit4"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Sombra Divisora</span>
+                <span class="villain-badge-state pending" id="state-villain-unit4">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit4" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit4">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit4')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 5 -->
+          <div class="module-card card-u5" onclick="app.startTopicSession('unit5')">
+            <div class="card-badge">U5 · ODS 5</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🍕🍰</span>
+            </div>
+            <h3>5. ¡Toma tu parte!</h3>
+            <p>Conocer las fracciones, gráficos de pizzas y barras, comparar y sumar/restar con igual denominador.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit5"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Monstruo Fraccionario</span>
+                <span class="villain-badge-state pending" id="state-villain-unit5">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit5" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit5">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit5')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 6 -->
+          <div class="module-card card-u6" onclick="app.startTopicSession('unit6')">
+            <div class="card-badge">U6 · ODS 8</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🗺️📐</span>
+            </div>
+            <h3>6. Patrones y formas</h3>
+            <p>Coordenadas cartesianas (X, Y), itinerarios y rutas, simetría y transformaciones.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit6"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Barón Simetría</span>
+                <span class="villain-badge-state pending" id="state-villain-unit6">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit6" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit6">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit6')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 7 -->
+          <div class="module-card card-u7" onclick="app.startTopicSession('unit7')">
+            <div class="card-badge">U7 · ODS 9</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🏛️🏙️</span>
+            </div>
+            <h3>7. Geometría urbana</h3>
+            <p>Polígonos (triángulos y cuadriláteros), poliedros (caras, aristas, vértices) y cuerpos redondos.</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit7"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Titán Poliedro</span>
+                <span class="villain-badge-state pending" id="state-villain-unit7">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit7" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit7">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit7')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 8 -->
+          <div class="module-card card-u8" onclick="app.startTopicSession('unit8')">
+            <div class="card-badge">U8 · ODS 10</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">📊📈</span>
+            </div>
+            <h3>8. Una población diversa</h3>
+            <p>Estudios estadísticos, gráficos de barras y pictogramas, y probabilidad (seguro, posible e imposible).</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit8"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Conde Probábilis</span>
+                <span class="villain-badge-state pending" id="state-villain-unit8">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit8" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit8">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit8')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- UNIDAD 9 -->
+          <div class="module-card card-u9" onclick="app.startTopicSession('unit9')">
+            <div class="card-badge">U9 · ODS 11</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">♻️⚖️</span>
+            </div>
+            <h3>9. Reduce, reutiliza y recicla</h3>
+            <p>Igualdades en balanzas, patrones numéricos y pensamiento computacional (secuencias y bucles).</p>
+            <div class="card-villain-strip">
+              <div class="card-villain-thumb" id="thumb-villain-unit9"></div>
+              <div class="card-villain-info">
+                <span class="card-villain-name">Megawatt Desperdicio</span>
+                <span class="villain-badge-state pending" id="state-villain-unit9">⚔️ En combate</span>
+              </div>
+            </div>
+            <div class="card-unit-progress">
+              <div class="card-progress-track">
+                <div class="card-progress-bar" id="prog-bar-unit9" style="width: 0%;"></div>
+              </div>
+              <div class="card-progress-label" id="prog-label-unit9">Progreso: 0%</div>
+            </div>
+            <div class="card-footer">
+              <span class="level-indicator">Edelvives 4º</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.startTopicSession('unit9')">Entrenar →</button>
+            </div>
+          </div>
+
+          <!-- Tienda y Recompensas -->
+          <div class="module-card card-gold" onclick="app.showScreen('shop')">
+            <div class="card-badge highlight-badge">¡Premios!</div>
+            <div class="card-icon-wrapper">
+              <span class="card-emoji">🛍️✨</span>
+            </div>
+            <h3>Tienda de Recompensas</h3>
+            <p>Usa tus monedas ganadas para desbloquear cascos espaciales, disfraces y mascotas.</p>
+            <div class="card-footer">
+              <span class="level-indicator">Tus Ahorros</span>
+              <button type="button" class="btn-card-play" onclick="event.stopPropagation(); app.showScreen('shop')">Ver Tienda →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN DE LOGROS / TROFEOS -->
+      <section class="achievements-section">
+        <div class="section-header">
+          <h2>🏆 Mis Logros y Medallas</h2>
+          <span class="section-tag" id="achievements-count">0/6 conseguidos</span>
+        </div>
+        <div class="achievements-row" id="achievements-container">
+          <!-- Se llenan dinámicamente con JS -->
+        </div>
+      </section>
+    </main>
+
+    <!-- PANTALLA DE JUEGO / EJERCICIOS (INTERACTIVA ESTILO SMARTICK) -->
+    <main id="screen-exercise" class="screen">
+      <div class="exercise-header">
+        <button class="btn-back" onclick="app.confirmExitExercise()">← Salir</button>
+        <div class="progress-bar-container">
+          <div class="progress-info">
+            <span id="session-type-label">Sesión Diaria</span>
+            <span id="progress-text">Pregunta 1 de 12</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill" style="width: 8%;"></div>
+          </div>
+        </div>
+        <div class="exercise-stats">
+          <button class="level-pill level-2 interactive-level-pill" id="exercise-level-pill" onclick="app.cycleExerciseLevel()" title="¡Haz clic aquí para cambiar el nivel de dificultad en cualquier momento!">⭐⭐ Nivel 2: Intermedio 🔄</button>
+          <div class="streak-badge combo-badge" id="current-streak-badge" title="Combo de Energía (aciertos consecutivos)">
+            <span class="combo-icon">💥</span>
+            <span class="combo-label">COMBO</span>
+            <span id="current-streak-count">x0</span>
+          </div>
+          <div class="timer-badge" id="exercise-timer-badge" style="display: none;">⏱️ <span id="timer-count">60</span>s</div>
+        </div>
+      </div>
+
+      <!-- Contenedor dinámico del ejercicio -->
+      <div class="exercise-card-container">
+        <div class="exercise-card" id="current-exercise-card">
+          <!-- Categoría e indicación -->
+          <div class="exercise-meta">
+            <span class="tag-topic" id="exercise-topic-badge">Multiplicación</span>
+            <button id="btn-read-aloud" class="btn-read-text" onclick="app.readCurrentProblem()" title="Escuchar en voz alta">
+              🔊 Escuchar problema
+            </button>
+          </div>
+
+          <!-- Enunciado o pregunta -->
+          <div class="question-box">
+            <h2 id="exercise-question">¿Cuánto es 34 × 6?</h2>
+            <div id="exercise-visual-area" class="visual-math-area"></div>
+          </div>
+
+          <!-- ARENA DE COMBATE COMPACTA: HÉROE VS VILLANO -->
+          <div class="combat-arena" id="combat-arena">
+            <!-- Combatiente Izquierdo: Héroe -->
+            <div class="combatant hero-combatant">
+              <div class="combatant-avatar-box hero-box" id="arena-hero-avatar">
+                <!-- Se llena dinámicamente con AvatarRenderer -->
+              </div>
+              <div class="combatant-stats">
+                <div class="combatant-name" id="arena-hero-name">Guerrero/a</div>
+                <div class="combatant-bar-track energy-track" title="Energía Ki / Combo">
+                  <div class="combatant-bar-fill energy-fill" id="arena-hero-energy-fill" style="width: 25%;"></div>
+                </div>
+                <div class="combatant-sub energy-sub" id="arena-hero-sub">⚡ Combo x0</div>
+              </div>
+            </div>
+
+            <!-- Centro: Zona de Choque / Rayo de Energía / VS -->
+            <div class="combat-clash-zone" id="combat-clash-zone">
+              <div class="vs-badge" id="arena-vs-badge">VS</div>
+              <div class="energy-beam" id="energy-beam"></div>
+              <div class="combat-shield-bubble" id="combat-shield-bubble" style="display: none;">🛡️ ¡BLOQUEO!</div>
+            </div>
+
+            <!-- Combatiente Derecho: Villano -->
+            <div class="combatant villain-combatant">
+              <div class="combatant-stats text-right">
+                <div class="combatant-name" id="arena-villain-name">Lord Cero</div>
+                <div class="combatant-bar-track hp-track" title="Vida del Villano">
+                  <div class="combatant-bar-fill hp-fill" id="arena-villain-hp-fill" style="width: 100%;"></div>
+                </div>
+                <div class="combatant-sub hp-sub" id="arena-villain-hp-text">100 / 100 HP</div>
+              </div>
+              <div class="combatant-avatar-box villain-box" id="arena-villain-avatar">
+                <!-- Se llena dinámicamente con VillainRenderer -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Opciones de respuesta o Teclado interactivo -->
+          <div id="exercise-input-area" class="interaction-area">
+            <!-- Renderizado dinámico según el tipo de ejercicio -->
+          </div>
+
+          <!-- Pistas y ayuda para el niño -->
+          <div id="hint-box" class="hint-container" style="display: none;">
+            <div class="hint-header">💡 Pista amigable:</div>
+            <p id="hint-text"></p>
+          </div>
+        </div>
+
+        <div class="exercise-bottom-bar">
+          <button id="btn-request-hint" class="btn-hint" onclick="app.showHint()">💡 ¿Necesitas una pista?</button>
+          <button id="btn-submit-answer" class="btn-submit" onclick="app.submitCurrentAnswer()">¡Comprobar! ✨</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL / OVERLAY DE RESULTADO POSITIVO O NEGATIVO -->
+    <div id="feedback-modal" class="modal-overlay">
+      <div class="feedback-card" id="feedback-card">
+        <div class="feedback-icon" id="feedback-icon">🎉</div>
+        <h2 id="feedback-title">¡GENIAL!</h2>
+        <div id="feedback-level-change" class="feedback-level-msg" style="display: none;"></div>
+        <p id="feedback-message">¡Has resuelto la operación como un auténtico matemático!</p>
+        <div class="feedback-reward" id="feedback-reward">
+          +10 
+          <svg class="coin-svg coin-svg-sm" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+            <circle cx="12" cy="12" r="7.5" fill="#fbbf24" stroke="#d97706" stroke-width="1.2"/>
+            <text x="12" y="16.5" font-family="'Fredoka', 'Nunito', sans-serif" font-size="12" font-weight="900" fill="#78350f" text-anchor="middle">M</text>
+          </svg>
+          +1 ⭐
+        </div>
+        <button id="btn-next-exercise" class="btn-feedback-action" onclick="app.nextExercise()">¡Continuar! →</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE RESUMEN DE SESIÓN (FIN DE SESIÓN) -->
+    <main id="screen-summary" class="screen">
+      <div class="summary-container">
+        <div class="summary-card">
+          <div class="celebration-badge">🏆 ¡SESIÓN COMPLETADA! 🏆</div>
+          <h1 id="summary-headline">¡Buen trabajo, Campeón!</h1>
+          <p id="summary-subline">Has entrenado tus neuronas de 4º de Primaria de forma fantástica.</p>
+
+          <div class="summary-metrics">
+            <div class="metric-box">
+              <span class="metric-icon">⭐</span>
+              <span class="metric-val" id="sum-stars">+12</span>
+              <span class="metric-label">Estrellas</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-icon coin-icon">
+                <svg class="coin-svg coin-svg-lg" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="7.5" fill="#fbbf24" stroke="#d97706" stroke-width="1.2"/>
+                  <text x="12" y="16.5" font-family="'Fredoka', 'Nunito', sans-serif" font-size="12" font-weight="900" fill="#78350f" text-anchor="middle">M</text>
+                </svg>
+              </span>
+              <span class="metric-val" id="sum-coins">+45</span>
+              <span class="metric-label">Monedas</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-icon">🎯</span>
+              <span class="metric-val" id="sum-accuracy">92%</span>
+              <span class="metric-label">Aciertos</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-icon">📈</span>
+              <span class="metric-val" id="sum-level">Nivel 2</span>
+              <span class="metric-label">Nivel Final</span>
+            </div>
+          </div>
+
+          <div class="summary-actions">
+            <button class="btn-primary-big" onclick="app.showScreen('home')">🏠 Volver al Mapa</button>
+            <button class="btn-secondary-big" onclick="app.showScreen('shop')">🛍️ Ir a la Tienda</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- PANTALLA DE TIENDA Y PERSONALIZACIÓN DE AVATAR -->
+    <main id="screen-shop" class="screen">
+      <div class="shop-container">
+        <div class="shop-top">
+          <button class="btn-back" onclick="app.showScreen('home')">← Volver al Mapa</button>
+          <h2>🥋 Dojo de Equipamiento · Guerreros del Cálculo</h2>
+        </div>
+
+        <div class="shop-layout">
+          <!-- Probador del Avatar -->
+          <div class="avatar-fitting-room">
+            <h3>Tu Guerrero / Guerrera</h3>
+            <div class="avatar-stage">
+              <div id="full-avatar-display" class="large-avatar-preview"></div>
+            </div>
+
+            <!-- BOTÓN RÁPIDO: MODO GUERRERO PURO (DESEQUIPAR TODO) -->
+            <button type="button" class="btn-unequip-all" onclick="app.unequipAll()" title="Quita todos los complementos para lucir tu dogi y estilo marcial original">
+              <span class="btn-unequip-icon">🥋</span>
+              <span class="btn-unequip-text">Modo Guerrero Puro (Desequipar Todo)</span>
+            </button>
+
+            <!-- SELECTOR DE GUERREROS DEL CÁLCULO -->
+            <div class="warrior-selector-panel">
+              <div class="tester-title">🥋 Elige a tu Guerrero / Guerrera:</div>
+              <div class="warrior-select-buttons" id="warrior-select-buttons">
+                <!-- Se rellena dinámicamente con JS -->
+              </div>
+              <div class="warrior-desc-box" id="warrior-desc-box"></div>
+            </div>
+
+            <!-- PROBADOR DE MODOS Y TRANSFORMACIONES DESBLOQUEADAS -->
+            <div class="transformation-tester">
+              <div class="tester-title">⚡ Modo de Combate / Color:</div>
+              <div class="tester-buttons" id="tester-trans-buttons">
+                <!-- Se rellena dinámicamente con JS -->
+              </div>
+            </div>
+
+            <input type="text" id="player-name-input" class="name-editor-input" placeholder="Nombre de tu héroe" maxlength="14" onchange="app.savePlayerName(this.value)">
+            <p class="avatar-tip">¡Elige los complementos que más te gusten con tus monedas o entrena en modo puro!</p>
+            
+            <div class="profile-room-footer">
+              <button type="button" class="btn-danger-reset" onclick="app.confirmResetProgress()" title="Reiniciar todo el progreso del juego">
+                <span>⚠️</span> Reiniciar Progreso
+              </button>
+            </div>
+          </div>
+
+          <!-- Catálogo de compras -->
+          <div class="shop-items-panel">
+            <div class="shop-tabs">
+              <button class="shop-tab-btn active" onclick="app.filterShop('hat', this)">Peinados y Cascos 🧢</button>
+              <button class="shop-tab-btn" onclick="app.filterShop('glasses', this)">Visores de Energía 🥽</button>
+              <button class="shop-tab-btn" onclick="app.filterShop('suit', this)">Armaduras y Kimonos 🥋</button>
+              <button class="shop-tab-btn" onclick="app.filterShop('pet', this)">Compañeros 🐾</button>
+            </div>
+
+            <div class="shop-grid" id="shop-items-grid">
+              <!-- Se rellena con JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL SELECTOR DE TABLAS DE MULTIPLICAR -->
+  <div id="tables-modal" class="modal-overlay" onclick="if(event.target === this) app.closeTablesModal()">
+    <div class="tables-modal-card">
+      <div class="tables-modal-header">
+        <div class="tables-modal-icon">✖️⚡</div>
+        <h2>Misión: Tablas de Multiplicar</h2>
+        <p>¿Qué quieres entrenar hoy para dominar y afianzar las tablas?</p>
+      </div>
+
+      <div class="tables-main-options">
+        <button class="btn-table-featured" onclick="app.startTablesSession('all')">
+          <span class="featured-icon">🌟</span>
+          <div class="featured-info">
+            <span class="featured-title">¡Todas las Tablas Mezcladas!</span>
+            <span class="featured-sub">Gran reto del 1 al 10 con retos relámpago y factores</span>
+          </div>
+        </button>
+
+        <button class="btn-table-special" onclick="app.startTablesSession('hard')">
+          <span class="featured-icon">🔥</span>
+          <div class="featured-info">
+            <span class="featured-title">Tablas Reto: 6, 7, 8 y 9</span>
+            <span class="featured-sub">Las tablas clave y más desafiantes de 4º de Primaria</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="tables-grid-title">O practica una tabla específica:</div>
+      <div class="tables-grid-buttons">
+        <button class="btn-table-single" onclick="app.startTablesSession(2)">Tabla del 2 🟢</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(3)">Tabla del 3 🟡</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(4)">Tabla del 4 🟠</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(5)">Tabla del 5 🟣</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(6)">Tabla del 6 🔴</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(7)">Tabla del 7 🟣</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(8)">Tabla del 8 🔵</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(9)">Tabla del 9 🌟</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(10)">Tabla del 10 🚀</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(11)">Tabla del 11 ⚡</button>
+        <button class="btn-table-single" onclick="app.startTablesSession(12)">Tabla del 12 🏆</button>
+      </div>
+
+      <div class="tables-modal-footer">
+        <button class="btn-close-modal" onclick="app.closeTablesModal()">Cerrar ✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MENÚ DE PERFIL DEL GUERRERO -->
+  <div id="profile-modal" class="modal-overlay" onclick="if(event.target === this) app.closeProfileModal()">
+    <div class="profile-modal-card">
+      <button type="button" class="modal-close-icon" onclick="app.closeProfileModal()" title="Cerrar">✕</button>
+      
+      <div class="profile-modal-header">
+        <div class="profile-avatar-circle" id="profile-modal-avatar">
+          <!-- Generado con JS -->
+        </div>
+        <div class="profile-header-info">
+          <h2>Menú de Perfil</h2>
+          <div class="profile-name-row">
+            <span class="profile-name-label">Nombre:</span>
+            <input type="text" id="profile-modal-name-input" class="profile-modal-name-input" maxlength="14" placeholder="Nombre de tu héroe" onchange="app.savePlayerName(this.value)">
+          </div>
+          <div class="profile-warrior-tag" id="profile-modal-warrior-tag">
+            <!-- Generado con JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-stats-grid">
+        <div class="profile-stat-box">
+          <span class="profile-stat-icon">⚡</span>
+          <span class="profile-stat-label">Nivel de Poder</span>
+          <span class="profile-stat-val" id="profile-stat-power">550 Ki</span>
+        </div>
+        <div class="profile-stat-box">
+          <span class="profile-stat-icon">⭐</span>
+          <span class="profile-stat-label">Estrellas</span>
+          <span class="profile-stat-val" id="profile-stat-stars">12 ⭐</span>
+        </div>
+        <div class="profile-stat-box">
+          <span class="profile-stat-icon">💰</span>
+          <span class="profile-stat-label">Monedas Dojo</span>
+          <span class="profile-stat-val" id="profile-stat-coins">60</span>
+        </div>
+        <div class="profile-stat-box">
+          <span class="profile-stat-icon">🔥</span>
+          <span class="profile-stat-label">Racha Diaria</span>
+          <span class="profile-stat-val" id="profile-stat-streak">3 días</span>
+        </div>
+        <div class="profile-stat-box">
+          <span class="profile-stat-icon">🏆</span>
+          <span class="profile-stat-label">Villanos Vencidos</span>
+          <span class="profile-stat-val" id="profile-stat-villains">0 / 11</span>
+        </div>
+        <div class="profile-stat-box">
+          <span class="profile-stat-icon">🎯</span>
+          <span class="profile-stat-label">Nivel de Dificultad</span>
+          <span class="profile-stat-val" id="profile-stat-level">Intermedio</span>
+        </div>
+      </div>
+
+      <div class="profile-modal-actions">
+        <button type="button" class="btn-profile-dojo" onclick="app.closeProfileModal(); app.showScreen('shop');">
+          <span>🥋</span> Ir al Dojo y Personalizar Avatar
+        </button>
+        <button type="button" class="btn-profile-reset" onclick="app.confirmResetProgress()">
+          <span>⚠️</span> Reiniciar Progreso
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN DE REINICIO DE PROGRESO (PROTEGIDO CON PIN) -->
+  <div id="reset-confirm-modal" class="modal-overlay" onclick="if(event.target === this) app.closeResetConfirmModal()">
+    <div class="reset-confirm-card">
+      <div class="reset-warning-icon">⚠️</div>
+      <h2>¿Estás seguro de que quieres reiniciar?</h2>
+      <p class="reset-warning-text">
+        Esta acción borrará todas tus <strong>estrellas</strong>, <strong>monedas</strong>, <strong>Ki acumulado</strong> y <strong>villanos derrotados</strong>.
+      </p>
+      <div class="reset-impact-box">
+        <div class="impact-item">❌ Se restablece a <strong>Modo Aprendiz (Nivel 1)</strong></div>
+        <div class="impact-item">❌ Se vacía el inventario de complementos comprados</div>
+        <div class="impact-item">❌ Se reinician las misiones y barras de unidades</div>
+      </div>
+      <div class="parental-lock-box">
+        <label for="parent-pin-input" class="parental-pin-label">
+          <span>🔐 Control Parental:</span> Introduce el PIN de padres para desbloquear:
+        </label>
+        <input type="password" id="parent-pin-input" class="parent-pin-input" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off" oninput="app.checkParentPin(this.value)">
+      </div>
+      <p class="reset-irreversible-note">¡Esta acción no se puede deshacer!</p>
+
+      <div class="reset-actions-row">
+        <button type="button" class="btn-reset-cancel" onclick="app.closeResetConfirmModal()">
+          ✕ Cancelar (Mantener mi progreso)
+        </button>
+        <button type="button" id="btn-reset-confirm" class="btn-reset-confirm" disabled onclick="app.executeResetProgress()">
+          🗑️ Sí, reiniciar progreso
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN PARA SALIR DE SESIÓN -->
+  <div id="exit-confirm-modal" class="modal-overlay" onclick="if(event.target === this) app.closeExitModal()">
+    <div class="reset-confirm-card">
+      <div class="reset-warning-icon">🚪</div>
+      <h2>¿Quieres salir del combate?</h2>
+      <p class="reset-warning-text">
+        Tu progreso y nivel actual se guardarán automáticamente en tu perfil.
+      </p>
+      <div class="reset-actions-row">
+        <button type="button" class="btn-reset-cancel" onclick="app.closeExitModal()">
+          ⚔️ Continuar combate
+        </button>
+        <button type="button" class="btn-reset-confirm unlocked" onclick="app.executeExitExercise()">
+          🚪 Salir al Dojo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast flotante de nivel adaptativo -->
+  <div id="level-toast" class="level-up-toast">
+    <span id="level-toast-icon">🚀</span>
+    <span id="level-toast-text">¡Subes a Nivel Avanzado!</span>
+  </div>
+
+  <!-- Canvas de confeti para celebraciones -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration error:', err));
+      });
+    }
+  </script>
+</body>
+</html>
