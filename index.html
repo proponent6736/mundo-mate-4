@@ -152,7 +152,7 @@
               <span class="card-emoji">✖️⚡</span>
             </div>
             <h3>Misión: Tablas de Multiplicar</h3>
-            <p>¡Domina del 1 al 10! Practica tablas individuales (como el 7 o el 8) o el gran reto con todas mezcladas.</p>
+            <p>¡Domina las tablas del 2 al 9 (1 cifra) y el reto Experto de 2 cifras! Practica tablas individuales o el gran reto con todas mezcladas.</p>
             <div class="card-villain-strip">
               <div class="card-villain-thumb" id="thumb-villain-tables"></div>
               <div class="card-villain-info">
@@ -679,7 +679,7 @@
       <div class="tables-modal-header">
         <div class="tables-modal-icon">✖️⚡</div>
         <h2>Misión: Tablas de Multiplicar</h2>
-        <p>¿Qué quieres entrenar hoy para dominar y afianzar las tablas?</p>
+        <p>¿Qué quieres entrenar hoy para dominar y afianzar las tablas de 1 cifra?</p>
       </div>
 
       <div class="tables-main-options">
@@ -687,7 +687,7 @@
           <span class="featured-icon">🌟</span>
           <div class="featured-info">
             <span class="featured-title">¡Todas las Tablas Mezcladas!</span>
-            <span class="featured-sub">Gran reto del 1 al 10 con retos relámpago y factores</span>
+            <span class="featured-sub">Gran reto del 2 al 9 (1 cifra) con factores y cálculo mental</span>
           </div>
         </button>
 
@@ -695,12 +695,12 @@
           <span class="featured-icon">🔥</span>
           <div class="featured-info">
             <span class="featured-title">Tablas Reto: 6, 7, 8 y 9</span>
-            <span class="featured-sub">Las tablas clave y más desafiantes de 4º de Primaria</span>
+            <span class="featured-sub">Las tablas de 1 cifra clave y más desafiantes de 4º de Primaria</span>
           </div>
         </button>
       </div>
 
-      <div class="tables-grid-title">O practica una tabla específica:</div>
+      <div class="tables-grid-title">O practica una tabla específica (1 cifra, Niveles 1 a 3):</div>
       <div class="tables-grid-buttons">
         <button class="btn-table-single" onclick="app.startTablesSession(2)">Tabla del 2 🟢</button>
         <button class="btn-table-single" onclick="app.startTablesSession(3)">Tabla del 3 🟡</button>
@@ -710,9 +710,15 @@
         <button class="btn-table-single" onclick="app.startTablesSession(7)">Tabla del 7 🟣</button>
         <button class="btn-table-single" onclick="app.startTablesSession(8)">Tabla del 8 🔵</button>
         <button class="btn-table-single" onclick="app.startTablesSession(9)">Tabla del 9 🌟</button>
-        <button class="btn-table-single" onclick="app.startTablesSession(10)">Tabla del 10 🚀</button>
-        <button class="btn-table-single" onclick="app.startTablesSession(11)">Tabla del 11 ⚡</button>
-        <button class="btn-table-single" onclick="app.startTablesSession(12)">Tabla del 12 🏆</button>
+      </div>
+
+      <div class="tables-expert-section">
+        <div class="tables-expert-title">⭐ Solo Nivel Experto (2 cifras)</div>
+        <div class="tables-expert-buttons">
+          <button class="btn-table-single btn-table-expert" onclick="app.startTablesSession(10, 4)">Tabla del 10 🚀</button>
+          <button class="btn-table-single btn-table-expert" onclick="app.startTablesSession(11, 4)">Tabla del 11 ⚡</button>
+          <button class="btn-table-single btn-table-expert" onclick="app.startTablesSession(12, 4)">Tabla del 12 🏆</button>
+        </div>
       </div>
 
       <div class="tables-modal-footer">

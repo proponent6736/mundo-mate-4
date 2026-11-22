@@ -487,91 +487,60 @@ class QuestionGenerator {
     const chosen = subtopics[Math.floor(Math.random() * subtopics.length)];
 
     if (chosen === 'addition') {
+      let addends = [];
       if (level === 1) {
         const a = Math.floor(Math.random() * 3000) + 1200;
         const b = Math.floor(Math.random() * 2000) + 1100;
-        const ans = a + b;
-        return {
-          topic: 'U2: Suma con llevada (Nivel 1)',
-          question: `Calcula: ${a} + ${b}`,
-          hint: `Suma unidades con unidades, decenas con decenas y añade las llevadas.`,
-          correct: ans,
-          options: this.makeOptions(ans, 4, 30),
-          type: 'quiz'
-        };
+        addends = [a, b];
       } else if (level === 2) {
         const a = Math.floor(Math.random() * 25000) + 15000;
         const b = Math.floor(Math.random() * 20000) + 12000;
-        const ans = a + b;
-        return {
-          topic: 'U2: Suma de 5 cifras (Nivel 2)',
-          question: `Calcula: ${a.toLocaleString('es-ES')} + ${b.toLocaleString('es-ES')}`,
-          hint: `Coloca los números en columna y suma con cuidado las decenas de millar.`,
-          correct: ans,
-          type: 'numpad'
-        };
+        addends = [a, b];
       } else if (level === 3) {
         const a = Math.floor(Math.random() * 12000) + 10000;
         const b = Math.floor(Math.random() * 8000) + 5000;
         const c = Math.floor(Math.random() * 4000) + 2000;
-        const ans = a + b + c;
-        return {
-          topic: 'U2: Suma de 3 números (Nivel 3)',
-          question: `Calcula: ${a.toLocaleString('es-ES')} + ${b.toLocaleString('es-ES')} + ${c.toLocaleString('es-ES')}`,
-          hint: `Puedes sumar primero los dos primeros sumandos y luego añadir el tercero.`,
-          correct: ans,
-          type: 'numpad'
-        };
+        addends = [a, b, c];
       } else {
-        const total = 50000;
-        const a = Math.floor(Math.random() * 15000) + 20000;
-        const missing = total - a;
-        return {
-          topic: 'U2: Suma con Incógnita (Nivel 4 Pro)',
-          question: `¿Qué número falta para completar la igualdad? ${a.toLocaleString('es-ES')} + [ ? ] = 50.000`,
-          hint: `Aplica la operación inversa: resta 50.000 - ${a.toLocaleString('es-ES')}.`,
-          correct: missing,
-          options: this.makeOptions(missing, 4, 500),
-          type: 'quiz'
-        };
+        const a = Math.floor(Math.random() * 35000) + 25000;
+        const b = Math.floor(Math.random() * 25000) + 15000;
+        addends = [a, b];
       }
+      const ans = addends.reduce((acc, val) => acc + val, 0);
+      return {
+        topic: `U2: Suma en Cuaderno (Nivel ${level})`,
+        question: `Coloca y resuelve la suma en tu cuaderno:`,
+        hint: `Suma columna a columna empezando por las unidades (U) hacia la izquierda y anota las llevadas arriba.`,
+        correct: ans,
+        type: 'notebook',
+        op: 'add',
+        addends: addends
+      };
     } else if (chosen === 'subtraction') {
+      let a, b;
       if (level === 1) {
-        const b = Math.floor(Math.random() * 1800) + 1000;
+        b = Math.floor(Math.random() * 1800) + 1000;
         const ans = Math.floor(Math.random() * 1500) + 1000;
-        const a = b + ans;
-        return {
-          topic: 'U2: Resta con llevada (Nivel 1)',
-          question: `Calcula: ${a} - ${b}`,
-          hint: `Resta columna a columna recordando pedir prestado si la cifra de arriba es menor.`,
-          correct: ans,
-          options: this.makeOptions(ans, 4, 30),
-          type: 'quiz'
-        };
+        a = b + ans;
       } else if (level === 2) {
-        const b = Math.floor(Math.random() * 15000) + 10000;
+        b = Math.floor(Math.random() * 15000) + 10000;
         const ans = Math.floor(Math.random() * 15000) + 12000;
-        const a = b + ans;
-        return {
-          topic: 'U2: Resta de 5 cifras (Nivel 2)',
-          question: `Calcula: ${a.toLocaleString('es-ES')} - ${b.toLocaleString('es-ES')}`,
-          hint: `Resta con atención en las llevadas de las centenas y millares.`,
-          correct: ans,
-          type: 'numpad'
-        };
+        a = b + ans;
       } else {
-        const minuend = 40000;
-        const subtrahend = Math.floor(Math.random() * 18000) + 14000;
-        const ans = minuend - subtrahend;
-        return {
-          topic: `U2: Restas con Ceros en Minuendo (Nivel ${level})`,
-          question: `Calcula: ${minuend.toLocaleString('es-ES')} - ${subtrahend.toLocaleString('es-ES')}`,
-          hint: `Al restar desde ceros, cada cero se convierte en 9 y el primero en 10.`,
-          correct: ans,
-          options: this.makeOptions(ans, 4, 200),
-          type: 'quiz'
-        };
+        a = [30000, 40000, 50000, 60000][Math.floor(Math.random() * 4)];
+        b = Math.floor(Math.random() * 18000) + 10500;
       }
+      const ans = a - b;
+      return {
+        topic: `U2: Resta en Cuaderno (Nivel ${level})`,
+        question: `Coloca y resuelve la resta en tu cuaderno:`,
+        hint: `Resta columna a columna empezando por las unidades (U). Recuerda pedir prestado si la cifra superior es menor.`,
+        correct: ans,
+        type: 'notebook',
+        op: 'sub',
+        minuend: a,
+        subtrahend: b
+      };
     } else if (chosen === 'inverse_check') {
       if (level <= 2) {
         return {
@@ -677,55 +646,45 @@ class QuestionGenerator {
         };
       }
     } else if (chosen === 'mult_1digit') {
+      let a, b;
       if (level === 1) {
-        const a = Math.floor(Math.random() * 50) + 32;
-        const b = Math.floor(Math.random() * 5) + 3;
-        const ans = a * b;
-        return {
-          topic: 'U3: Multiplicar por 1 cifra (Nivel 1)',
-          question: `Calcula: ${a} × ${b}`,
-          hint: `Multiplica primero las unidades (${a%10} × ${b}) y luego las decenas.`,
-          correct: ans,
-          options: this.makeOptions(ans, 4, 15),
-          type: 'quiz'
-        };
+        a = Math.floor(Math.random() * 50) + 32;
+        b = Math.floor(Math.random() * 5) + 3;
       } else {
-        const a = Math.floor(Math.random() * 400) + 210;
-        const b = Math.floor(Math.random() * 6) + 4;
-        const ans = a * b;
-        return {
-          topic: `U3: Multiplicar por 1 cifra (Nivel ${level})`,
-          question: `Calcula: ${a} × ${b}`,
-          hint: `Multiplica unidades, decenas y centenas, sumando las llevadas correspondientes.`,
-          correct: ans,
-          type: 'numpad'
-        };
+        a = Math.floor(Math.random() * 400) + 210;
+        b = Math.floor(Math.random() * 6) + 4;
       }
+      const ans = a * b;
+      return {
+        topic: `U3: Multiplicar por 1 cifra (Nivel ${level})`,
+        question: `Calcula la multiplicación en tu cuaderno:`,
+        hint: `Multiplica ${b} por las unidades, luego por las decenas y centenas, sumando las llevadas correspondientes.`,
+        correct: ans,
+        type: 'notebook',
+        op: 'mul',
+        factor1: a,
+        factor2: b
+      };
     } else if (chosen === 'mult_2digits') {
+      let a, b;
       if (level <= 2) {
-        const a = Math.floor(Math.random() * 30) + 25;
-        const b = [12, 14, 15, 21][Math.floor(Math.random() * 4)];
-        const ans = a * b;
-        return {
-          topic: `U3: Multiplicar por 2 cifras (Nivel ${level})`,
-          question: `Calcula: ${a} × ${b}`,
-          hint: `Multiplica ${a} por las unidades de ${b}, luego por sus decenas (dejando el hueco del cero) y suma los dos resultados.`,
-          correct: ans,
-          options: this.makeOptions(ans, 4, 40),
-          type: 'quiz'
-        };
+        a = Math.floor(Math.random() * 40) + 25;
+        b = [12, 14, 15, 21, 23, 24, 32][Math.floor(Math.random() * 7)];
       } else {
-        const a = Math.floor(Math.random() * 150) + 125;
-        const b = [23, 25, 32, 34][Math.floor(Math.random() * 4)];
-        const ans = a * b;
-        return {
-          topic: `U3: Multiplicar 3 cifras por 2 cifras (Nivel ${level})`,
-          question: `Calcula: ${a} × ${b}`,
-          hint: `Haz la multiplicación en dos filas y súmalas cuidadosamente.`,
-          correct: ans,
-          type: 'numpad'
-        };
+        a = Math.floor(Math.random() * 150) + 125;
+        b = [23, 25, 32, 34, 42, 45][Math.floor(Math.random() * 6)];
       }
+      const ans = a * b;
+      return {
+        topic: `U3: Multiplicar por 2 cifras (Nivel ${level})`,
+        question: `Calcula paso a paso la multiplicación de 2 cifras:`,
+        hint: `Multiplica primero por las unidades. En la segunda fila deja el hueco (·) y multiplica por las decenas. Luego suma los dos productos.`,
+        correct: ans,
+        type: 'notebook',
+        op: 'mul',
+        factor1: a,
+        factor2: b
+      };
     } else if (chosen === 'properties') {
       const propType = Math.random() > 0.5 ? 'distributiva' : 'conmutativa';
       if (propType === 'conmutativa') {
@@ -810,49 +769,42 @@ class QuestionGenerator {
         type: 'quiz'
       };
     } else if (chosen === 'div_1digit') {
+      let divisor, quotient, remainder, dividend;
       if (level === 1) {
-        const divisor = Math.floor(Math.random() * 4) + 3; // 3 a 6
-        const quotient = Math.floor(Math.random() * 15) + 12;
-        const dividend = divisor * quotient;
-        return {
-          topic: 'U4: División exacta (Nivel 1)',
-          question: `Calcula: ${dividend} ÷ ${divisor}`,
-          hint: `Busca qué número multiplicado por ${divisor} da ${dividend}: ${divisor} × ? = ${dividend}.`,
-          correct: quotient,
-          options: this.makeOptions(quotient, 4, 6),
-          type: 'quiz'
-        };
+        divisor = Math.floor(Math.random() * 4) + 3; // 3 a 6
+        quotient = Math.floor(Math.random() * 15) + 12;
+        remainder = 0;
+        dividend = divisor * quotient;
       } else {
-        const divisor = Math.floor(Math.random() * 4) + 5; // 5 a 8
-        const quotient = Math.floor(Math.random() * 15) + 10;
-        const remainder = Math.floor(Math.random() * (divisor - 2)) + 1;
-        const dividend = divisor * quotient + remainder;
-        const optSet = new Set([remainder]);
-        for (let r = 0; r < divisor; r++) {
-          if (r !== remainder) optSet.add(r);
-        }
-        let ex = 1;
-        while (optSet.size < 4) { optSet.add(remainder + ex); ex++; }
-        return {
-          topic: `U4: División con Resto (Nivel ${level})`,
-          question: `Al dividir ${dividend} entre ${divisor}, ¿cuál es el RESTO que sobra?`,
-          hint: `${divisor} × ${quotient} = ${divisor * quotient}. ¿Cuánto falta hasta llegar a ${dividend}?`,
-          correct: remainder,
-          options: this.shuffleArray(Array.from(optSet).slice(0, 4)),
-          type: 'quiz'
-        };
+        divisor = Math.floor(Math.random() * 4) + 4; // 4 a 7
+        quotient = Math.floor(Math.random() * 20) + 15;
+        remainder = Math.floor(Math.random() * (divisor - 1)) + 1;
+        dividend = divisor * quotient + remainder;
       }
-    } else if (chosen === 'div_2digits') {
-      const divisor = [12, 15, 20, 25][Math.floor(Math.random() * 4)];
-      const quotient = Math.floor(Math.random() * 12) + 8;
-      const dividend = divisor * quotient;
       return {
-        topic: `U4: Dividir entre 2 cifras (Nivel ${level})`,
-        question: `Calcula: ${dividend} ÷ ${divisor}`,
-        hint: `Prueba cuántas veces cabe ${divisor} en las primeras cifras de ${dividend}.`,
+        topic: `U4: División por 1 cifra (Nivel ${level})`,
+        question: `Resuelve la división en la caja tradicional de tu cuaderno:`,
+        hint: `Calcula cuántas veces cabe el divisor en el primer grupo de cifras, halla el resto y baja la cifra siguiente.`,
         correct: quotient,
-        options: this.makeOptions(quotient, 4, 8),
-        type: 'quiz'
+        type: 'notebook',
+        op: 'div',
+        dividend: dividend,
+        divisor: divisor
+      };
+    } else if (chosen === 'div_2digits') {
+      const divisor = [12, 14, 15, 21, 22, 25][Math.floor(Math.random() * 6)];
+      const quotient = Math.floor(Math.random() * 15) + 12;
+      const remainder = Math.floor(Math.random() * (divisor - 1));
+      const dividend = divisor * quotient + remainder;
+      return {
+        topic: `U4: División por 2 cifras (Nivel ${level})`,
+        question: `Resuelve la división entre 2 cifras en tu cuaderno:`,
+        hint: `Toma las primeras cifras del dividendo suficientes para que sean mayores o iguales que ${divisor}. Calcula cociente y restas intermedias.`,
+        correct: quotient,
+        type: 'notebook',
+        op: 'div',
+        dividend: dividend,
+        divisor: divisor
       };
     } else if (chosen === 'combined_ops') {
       if (level <= 2) {
@@ -1524,14 +1476,23 @@ class QuestionGenerator {
       T = hardTables[Math.floor(Math.random() * hardTables.length)];
     } else if (typeof tableFocus === 'number' || (!isNaN(parseInt(tableFocus)) && tableFocus !== 'all')) {
       T = parseInt(tableFocus);
+      // Las tablas 10, 11 y 12 pertenecen exclusivamente al Nivel 4 (Experto)
+      if (T >= 10 && level < 4) {
+        level = 4;
+      }
     } else {
       if (level === 1) {
-        const basicTables = [2, 3, 4, 5, 10];
+        // En Nivel 1 solo tablas de 1 cifra básicas (2, 3, 4, 5)
+        const basicTables = [2, 3, 4, 5];
         T = basicTables[Math.floor(Math.random() * basicTables.length)];
-      } else {
-        // En niveles 2, 3 y 4 damos peso especial a 6, 7, 8 y 9
-        const weightedTables = [2, 3, 4, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10];
+      } else if (level === 2 || level === 3) {
+        // En Niveles 2 y 3 solo tablas de 1 cifra (2 al 9 con refuerzo de 6, 7, 8 y 9)
+        const weightedTables = [2, 3, 4, 5, 6, 6, 7, 7, 8, 8, 9, 9];
         T = weightedTables[Math.floor(Math.random() * weightedTables.length)];
+      } else {
+        // Nivel 4 (Experto): Puede abarcar del 2 al 12
+        const level4Tables = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        T = level4Tables[Math.floor(Math.random() * level4Tables.length)];
       }
     }
 
@@ -1545,24 +1506,24 @@ class QuestionGenerator {
       7: '¡El gran reto del 7! Recuerda: 7 × 8 = 56 (¡5, 6, 7, 8!) y 7 × 7 = 49.',
       8: '¡Truco del 8! Es el doble del doble del doble (¡tres veces el doble!).',
       9: '¡Mágico truco del 9! Las dos cifras siempre suman 9 (ej: 9×4=36, 3+6=9) y la decena es 1 menos.',
-      10: '¡Súper fácil! Solo tienes que añadir un cero al final.',
+      10: '¡Súper fácil! Solo tienes que añadir un cero al final (ej: 10 × 7 = 70).',
       11: '¡Truco del 11! Para números de 1 cifra, repites el número dos veces (ej: 11 × 7 = 77).',
-      12: '12 × N es lo mismo que (10 × N) + (2 × N).'
+      12: '12 × N es lo mismo que (10 × N) + (2 × N) (ej: 12 × 4 = 40 + 8 = 48).'
     };
 
-    // Subtipos según nivel
+    // Subtipos según nivel (Niveles 1-3 estrictamente 1 cifra; Nivel 4 máximo 2 cifras)
     const subtopicsByLevel = {
       1: ['direct', 'commutative', 'visual_array'],
       2: ['direct', 'missing_factor', 'real_world'],
       3: ['missing_factor', 'inverse_division', 'table_series'],
-      4: ['tens_hundreds', 'triple_product', 'mental_combined', 'missing_factor']
+      4: ['tens_twodigits', 'triple_product', 'mental_combined', 'missing_factor']
     };
 
     const allowed = subtopicsByLevel[level] || subtopicsByLevel[2];
-    const mode = allowed[Math.floor(Math.random() * allowed.length)];
+    let mode = (T >= 10 && T <= 12) ? 'tens_twodigits' : allowed[Math.floor(Math.random() * allowed.length)];
 
     if (mode === 'direct') {
-      const K = Math.floor(Math.random() * 9) + 2; // 2 a 10
+      const K = Math.floor(Math.random() * 8) + 2; // 2 a 9 (estrictamente 1 cifra)
       const ans = T * K;
       const visual = (T <= 6 && K <= 6) ? this.renderTableArraySVG(T, K) : `<div class="table-chip">🎯 Tabla del ${T}</div>`;
       return {
@@ -1577,8 +1538,8 @@ class QuestionGenerator {
     }
 
     if (mode === 'visual_array') {
-      const rows = Math.min(T, 6);
-      const cols = Math.floor(Math.random() * 5) + 2; // 2 a 6
+      const rows = Math.min(Math.max(T, 2), 6);
+      const cols = Math.floor(Math.random() * 5) + 2; // 2 a 6 (1 cifra)
       const ans = rows * cols;
       return {
         topic: `Tablas: Filas y Columnas (Nivel 1)`,
@@ -1592,7 +1553,7 @@ class QuestionGenerator {
     }
 
     if (mode === 'commutative') {
-      const K = Math.floor(Math.random() * 9) + 2;
+      const K = Math.floor(Math.random() * 8) + 2; // 2 a 9 (estrictamente 1 cifra)
       const ans = T * K;
       return {
         topic: `Tablas: Propiedad Conmutativa (Nivel 1)`,
@@ -1606,7 +1567,7 @@ class QuestionGenerator {
     }
 
     if (mode === 'missing_factor') {
-      const K = Math.floor(Math.random() * 9) + 2; // 2 a 10
+      const K = Math.floor(Math.random() * 8) + 2; // 2 a 9 (estrictamente 1 cifra)
       const ans = T * K;
       const isFirst = Math.random() > 0.5;
       const equation = isFirst ? `[ ? ] × ${K} = ${ans}` : `${T} × [ ? ] = ${ans}`;
@@ -1623,7 +1584,7 @@ class QuestionGenerator {
     }
 
     if (mode === 'real_world') {
-      const K = Math.floor(Math.random() * 8) + 2;
+      const K = Math.floor(Math.random() * 8) + 2; // 2 a 9 (estrictamente 1 cifra)
       const ans = T * K;
       const stories = [
         { item: 'cajas de lápices', unit: 'lápices en cada caja', total: 'lápices' },
@@ -1645,7 +1606,7 @@ class QuestionGenerator {
     }
 
     if (mode === 'inverse_division') {
-      const K = Math.floor(Math.random() * 9) + 2;
+      const K = Math.floor(Math.random() * 8) + 2; // 2 a 9 (estrictamente 1 cifra)
       const total = T * K;
       return {
         topic: `Tablas: Operación Inversa (Nivel 3)`,
@@ -1659,7 +1620,7 @@ class QuestionGenerator {
     }
 
     if (mode === 'table_series') {
-      const startMult = Math.floor(Math.random() * 4) + 1;
+      const startMult = Math.floor(Math.random() * 4) + 1; // 1 a 4
       const s1 = T * startMult;
       const s2 = T * (startMult + 1);
       const s3 = T * (startMult + 2);
@@ -1676,26 +1637,57 @@ class QuestionGenerator {
       };
     }
 
-    if (mode === 'tens_hundreds') {
-      const K = Math.floor(Math.random() * 8) + 2;
-      const multTen = Math.random() > 0.4 ? 10 : 100;
-      const factor2 = K * multTen;
-      const ans = T * factor2;
+    // NIVEL 4 (EXPERTO): Máximo 2 cifras (decenas exactas de 2 cifras, tablas 10/11/12 por 1 cifra, o 2 cifras x 1 cifra)
+    if (mode === 'tens_twodigits') {
+      let f1, f2, ans, hintText;
+      if (T >= 10 && T <= 12) {
+        // Si el usuario eligió específicamente la tabla del 10, 11 o 12, siempre usar esa tabla multiplicada por 2..9 (1 cifra)
+        f1 = T;
+        f2 = Math.floor(Math.random() * 8) + 2; // 2..9 (1 cifra)
+        ans = f1 * f2;
+        hintText = tricks[T] || `Multiplica ${T} × ${f2} = ${ans}.`;
+      } else {
+        const typeChoice = Math.random();
+        if (typeChoice < 0.4) {
+          // Decenas exactas de 2 cifras (ej. 7 × 20, 8 × 30, 6 × 40)
+          f1 = Math.floor(Math.random() * 8) + 2; // 2..9 (1 cifra)
+          const tensBase = Math.floor(Math.random() * 8) + 2; // 2..9
+          f2 = tensBase * 10; // 20, 30, ... 90 (estrictamente 2 cifras, NUNCA centenas)
+          ans = f1 * f2;
+          hintText = `Multiplica primero ${f1} × ${tensBase} = ${f1 * tensBase}, y luego añade el cero: ${ans}.`;
+        } else if (typeChoice < 0.75) {
+          // Tablas del 10, 11 o 12 por 1 cifra (2..9)
+          const special = [10, 11, 12][Math.floor(Math.random() * 3)];
+          const digit = Math.floor(Math.random() * 8) + 2; // 2..9 (1 cifra)
+          f1 = special;
+          f2 = digit;
+          ans = f1 * f2;
+          hintText = tricks[special] || `Multiplica ${special} × ${digit} = ${ans}.`;
+        } else {
+          // Número de 2 cifras sencillo × 1 cifra (ej. 14 × 3, 21 × 4, 15 × 5)
+          f1 = [13, 14, 15, 16, 21, 22, 23, 24, 25, 31, 32][Math.floor(Math.random() * 11)];
+          f2 = Math.floor(Math.random() * 4) + 2; // 2..5 (1 cifra)
+          ans = f1 * f2;
+          const tens = Math.floor(f1 / 10) * 10;
+          const units = f1 % 10;
+          hintText = `Descompón ${f1} en (${tens} + ${units}): (${tens} × ${f2}) + (${units} × ${f2}) = ${ans}.`;
+        }
+      }
       return {
-        topic: `Tablas: Cálculo Relámpago con Decenas (Nivel 4)`,
-        question: `Calcula mentalmente: ${T} × ${factor2}`,
-        visual: `<div class="table-chip">🚀 Cálculo Relámpago</div>`,
-        hint: `Multiplica primero ${T} × ${K} = ${T * K}, y luego añade ${multTen === 10 ? 'un cero' : 'dos ceros'}.`,
+        topic: `Tablas: Cálculo Rápido (Nivel 4 - 2 cifras)`,
+        question: `Calcula mentalmente: ${f1} × ${f2}`,
+        visual: `<div class="table-chip">⭐ Reto de 2 Cifras</div>`,
+        hint: hintText,
         correct: ans,
-        options: this.makeOptions(ans, 4, multTen === 10 ? 30 : 300),
+        options: this.makeOptions(ans, 4, 20),
         type: 'quiz'
       };
     }
 
     if (mode === 'triple_product') {
-      const a = Math.floor(Math.random() * 3) + 2; // 2, 3, 4
-      const b = Math.floor(Math.random() * 3) + 2; // 2, 3, 4
-      const c = Math.floor(Math.random() * 4) + 2; // 2, 3, 4, 5
+      const a = Math.floor(Math.random() * 3) + 2; // 2, 3, 4 (1 cifra)
+      const b = Math.floor(Math.random() * 3) + 2; // 2, 3, 4 (1 cifra)
+      const c = Math.floor(Math.random() * 3) + 2; // 2, 3, 4 (1 cifra)
       const ans = a * b * c;
       return {
         topic: `Tablas: Producto Triple (Nivel 4)`,
@@ -1708,17 +1700,18 @@ class QuestionGenerator {
       };
     }
 
-    // fallback mental_combined
-    const K = Math.floor(Math.random() * 8) + 2;
-    const baseProd = T * K;
+    // fallback mental_combined (Nivel 4: 1 cifra o máx 12)
+    const baseT = (T <= 12) ? T : 9;
+    const K = Math.floor(Math.random() * 8) + 2; // 2..9 (1 cifra)
+    const baseProd = baseT * K;
     const extra = Math.floor(Math.random() * 15) + 5;
     const isAdd = Math.random() > 0.5;
     const ans = isAdd ? baseProd + extra : baseProd - extra;
     return {
       topic: `Tablas: Reto Combinado Rápido (Nivel 4)`,
-      question: `Resuelve mentalmente: (${T} × ${K}) ${isAdd ? '+' : '-'} ${extra}`,
+      question: `Resuelve mentalmente: (${baseT} × ${K}) ${isAdd ? '+' : '-'} ${extra}`,
       visual: `<div class="table-chip">🧠 Reto Combinado</div>`,
-      hint: `Primero haz la multiplicación: ${T} × ${K} = ${baseProd}. Luego ${isAdd ? 'suma' : 'resta'} ${extra}.`,
+      hint: `Primero haz la multiplicación: ${baseT} × ${K} = ${baseProd}. Luego ${isAdd ? 'suma' : 'resta'} ${extra}.`,
       correct: ans,
       options: this.makeOptions(ans, 4, 10),
       type: 'quiz'
@@ -1748,6 +1741,68 @@ class QuestionGenerator {
       </svg>
       <div class="table-array-caption">${rows} filas con ${cols} fichas cada una = ${rows * cols}</div>
     </div>`;
+  }
+
+  // =================================================================
+  // ALGORITMO ESCOLAR ESPAÑOL DE DIVISIÓN (PASOS INTERMEDIOS Y RESTOS)
+  // =================================================================
+  static buildDivisionSteps(dividend, divisor) {
+    const sDividend = String(dividend);
+    const n = sDividend.length;
+
+    // 1. Encontrar el prefijo inicial >= divisor
+    let idx = 1;
+    let prefix = parseInt(sDividend.slice(0, idx), 10);
+    while (prefix < divisor && idx < n) {
+      idx++;
+      prefix = parseInt(sDividend.slice(0, idx), 10);
+    }
+
+    const quotientDigits = [];
+    const steps = [];
+
+    let currentVal = prefix;
+    let qDigit = Math.floor(currentVal / divisor);
+    let rem = currentVal % divisor;
+    quotientDigits.push(qDigit);
+
+    steps.push({
+      stepNum: 1,
+      prefix: currentVal,
+      qDigit: qDigit,
+      product: qDigit * divisor,
+      remainder: rem,
+      colEnd: idx - 1,
+      broughtDown: null
+    });
+
+    while (idx < n) {
+      const brought = parseInt(sDividend[idx], 10);
+      idx++;
+      currentVal = rem * 10 + brought;
+      qDigit = Math.floor(currentVal / divisor);
+      rem = currentVal % divisor;
+      quotientDigits.push(qDigit);
+
+      steps.push({
+        stepNum: steps.length + 1,
+        prefix: currentVal,
+        qDigit: qDigit,
+        product: qDigit * divisor,
+        remainder: rem,
+        colEnd: idx - 1,
+        broughtDown: brought
+      });
+    }
+
+    return {
+      dividend: dividend,
+      divisor: divisor,
+      quotient: Math.floor(dividend / divisor),
+      remainder: dividend % divisor,
+      quotientDigits: quotientDigits,
+      steps: steps
+    };
   }
 
   // =================================================================
@@ -3496,12 +3551,31 @@ class SmartickApp {
     if (welcome) welcome.textContent = `¡Hola, ${this.state.name}! 🌟`;
 
     window.addEventListener('keydown', (e) => {
-      if (this.session.currentExercise && this.session.currentExercise.type === 'numpad') {
+      if (!this.session || !this.session.currentExercise) return;
+      const exType = this.session.currentExercise.type;
+      if (exType === 'numpad') {
         if (e.key >= '0' && e.key <= '9') {
           this.numpadAppend(e.key);
         } else if (e.key === 'Backspace') {
           this.numpadBackspace();
         } else if (e.key === 'Enter') {
+          this.submitCurrentAnswer();
+        }
+      } else if (exType === 'notebook') {
+        if (e.key >= '0' && e.key <= '9') {
+          e.preventDefault();
+          this.notebookKeypadInput(e.key);
+        } else if (e.key === 'Backspace' || e.key === 'Delete') {
+          e.preventDefault();
+          this.notebookKeypadBackspace();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          this.notebookKeypadNav(-1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          this.notebookKeypadNav(1);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
           this.submitCurrentAnswer();
         }
       }
@@ -3929,9 +4003,12 @@ class SmartickApp {
     if (modal) modal.classList.remove('active');
   }
 
-  startTablesSession(tableFocus = 'all') {
+  startTablesSession(tableFocus = 'all', forceLevel = null) {
     this.closeTablesModal();
-    this.startTopicSession('tables', tableFocus);
+    if (([10, 11, 12, '10', '11', '12'].includes(tableFocus)) && !forceLevel) {
+      forceLevel = 4;
+    }
+    this.startTopicSession('tables', tableFocus, forceLevel);
   }
 
   toggleSound() {
@@ -4092,7 +4169,7 @@ class SmartickApp {
     }, 1000);
   }
 
-  startTopicSession(topic, tableFocus = null) {
+  startTopicSession(topic, tableFocus = null, forceLevel = null) {
     this.sound.playPop();
     if (this.session && this.session.timerInterval) {
       clearInterval(this.session.timerInterval);
@@ -4130,6 +4207,8 @@ class SmartickApp {
       }
     }
 
+    const startLevel = forceLevel || this.state.adaptiveLevel || 2;
+
     this.session = {
       mode: 'topic',
       topic: topic,
@@ -4143,7 +4222,7 @@ class SmartickApp {
       maxStreak: 0,
       timerSeconds: 0,
       timerInterval: null,
-      currentLevel: this.state.adaptiveLevel || 2,
+      currentLevel: startLevel,
       levelStreak: 0,
       levelChangedInLastTurn: null
     };
@@ -4167,6 +4246,7 @@ class SmartickApp {
     }
 
     this.session.selectedAnswer = null;
+    this.session.notebookAttempts = 0;
     const hintBox = document.getElementById('hint-box');
     if (hintBox) hintBox.style.display = 'none';
 
@@ -4192,11 +4272,37 @@ class SmartickApp {
         const gen = generators[this.session.currentIndex % generators.length];
         exercise = gen();
       } else if (this.session.mode === 'speed') {
+        // En el Gimnasio Mental (60s) solo ejercicios rápidos tipo 'quiz' (sin cuentas de cuaderno)
         const speedGens = [
+          () => QuestionGenerator.generateTables(lvl, 'all'),
+          () => QuestionGenerator.generateTables(lvl, 'hard'),
           () => QuestionGenerator.generateUnit1(lvl),
-          () => QuestionGenerator.generateUnit2(lvl),
-          () => QuestionGenerator.generateUnit3(lvl),
-          () => QuestionGenerator.generateUnit4(lvl)
+          () => {
+            const a = Math.floor(Math.random() * 8) + 2;
+            const b = Math.floor(Math.random() * 8) + 2;
+            const ans = a * b;
+            return {
+              topic: 'Gimnasio Mental: Multiplicación Rápida',
+              question: `Calcula a toda velocidad: ${a} × ${b}`,
+              hint: `Recuerda la tabla del ${a}.`,
+              correct: ans,
+              options: QuestionGenerator.makeOptions(ans, 4, 8),
+              type: 'quiz'
+            };
+          },
+          () => {
+            const n = Math.floor(Math.random() * 80) + 12;
+            const factor = [10, 100, 1000][Math.floor(Math.random() * 3)];
+            const ans = n * factor;
+            return {
+              topic: 'Gimnasio Mental: Multiplicar por 10, 100 y 1.000',
+              question: `Calcula mentalmente: ${n} × ${factor}`,
+              hint: `Añade los ceros de ${factor} al final de ${n}.`,
+              correct: ans,
+              options: QuestionGenerator.makeOptions(ans, 4, factor * 2),
+              type: 'quiz'
+            };
+          }
         ];
         exercise = speedGens[Math.floor(Math.random() * speedGens.length)]();
       } else {
@@ -4264,6 +4370,8 @@ class SmartickApp {
         grid.appendChild(btn);
       });
       inputArea.appendChild(grid);
+    } else if (exercise.type === 'notebook') {
+      this.renderNotebookExercise(exercise, inputArea);
     } else {
       const container = document.createElement('div');
       container.className = 'numpad-container';
@@ -4294,6 +4402,983 @@ class SmartickApp {
       container.appendChild(keysGrid);
       inputArea.appendChild(container);
     }
+  }
+
+  // =================================================================
+  // MODO CUADERNO ESCOLAR INTERACTIVO (CUADRÍCULA Y VALOR POSICIONAL)
+  // =================================================================
+  getPvInfo(distFromRight) {
+    switch (distFromRight) {
+      case 0: return { label: 'U', cls: 'pv-u', key: 'u' };
+      case 1: return { label: 'D', cls: 'pv-d', key: 'd' };
+      case 2: return { label: 'C', cls: 'pv-c', key: 'c' };
+      case 3: return { label: 'UM', cls: 'pv-um', key: 'um' };
+      case 4: return { label: 'DM', cls: 'pv-dm', key: 'dm' };
+      default: return { label: 'CM', cls: 'pv-cm', key: 'cm' };
+    }
+  }
+
+  renderNotebookExercise(exercise, inputArea) {
+    if (inputArea) inputArea.innerHTML = '';
+    this.session.notebookState = {
+      cells: {},
+      cellOrder: [],
+      activeCellId: null,
+      op: exercise.op
+    };
+
+    const container = document.createElement('div');
+    container.className = 'notebook-area';
+
+    // 1. Leyenda de Valor Posicional en una sola fila
+    const legend = document.createElement('div');
+    legend.className = 'notebook-pv-legend';
+    legend.title = 'Código de Valor Posicional';
+    legend.innerHTML = `
+      <span class="pv-pill dm">DM</span>
+      <span class="pv-legend-sep">·</span>
+      <span class="pv-pill um">UM</span>
+      <span class="pv-legend-sep">·</span>
+      <span class="pv-pill c">C</span>
+      <span class="pv-legend-sep">·</span>
+      <span class="pv-pill d">D</span>
+      <span class="pv-legend-sep">·</span>
+      <span class="pv-pill u">U</span>
+    `;
+    container.appendChild(legend);
+
+    // 2. Papel de cuaderno cuadriculado
+    const paper = document.createElement('div');
+    paper.className = 'notebook-paper';
+
+    if (exercise.op === 'add') {
+      this.buildAdditionNotebook(exercise, paper);
+    } else if (exercise.op === 'sub') {
+      this.buildSubtractionNotebook(exercise, paper);
+    } else if (exercise.op === 'mul') {
+      this.buildMultiplicationNotebook(exercise, paper);
+    } else if (exercise.op === 'div') {
+      this.buildDivisionNotebook(exercise, paper);
+    }
+
+    container.appendChild(paper);
+
+    // 3. Teclado Táctil en Pantalla (0-9, Nav y Borrar)
+    const keypad = document.createElement('div');
+    keypad.className = 'notebook-keypad';
+    keypad.innerHTML = `
+      <div class="keypad-row">
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('1')">1</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('2')">2</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('3')">3</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('4')">4</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('5')">5</button>
+      </div>
+      <div class="keypad-row">
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('6')">6</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('7')">7</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('8')">8</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('9')">9</button>
+        <button type="button" class="btn-keypad" onclick="app.notebookKeypadInput('0')">0</button>
+      </div>
+      <div class="keypad-row">
+        <button type="button" class="btn-keypad btn-keypad-nav" onclick="app.notebookKeypadNav(-1)" title="Casilla anterior">←</button>
+        <button type="button" class="btn-keypad btn-keypad-nav" onclick="app.notebookKeypadNav(1)" title="Casilla siguiente">→</button>
+        <button type="button" class="btn-keypad btn-keypad-del" onclick="app.notebookKeypadBackspace()" title="Borrar cifra">⌫ Borrar</button>
+      </div>
+    `;
+    container.appendChild(keypad);
+
+    inputArea.appendChild(container);
+
+    // Auto-enfocar la primera casilla del orden de resolución
+    if (this.session.notebookState.cellOrder.length > 0) {
+      this.notebookFocusCell(this.session.notebookState.cellOrder[0]);
+    }
+  }
+
+  buildAdditionNotebook(exercise, paper) {
+    const addends = exercise.addends;
+    const sum = addends.reduce((a, b) => a + b, 0);
+    const sumStr = String(sum);
+    const numCols = Math.max(sumStr.length, ...addends.map(a => String(a).length));
+
+    const table = document.createElement('table');
+    table.className = 'notebook-table';
+
+    // 1. Cabeceras con valor posicional
+    const headerRow = document.createElement('tr');
+    headerRow.innerHTML = '<th></th>';
+    for (let c = 0; c < numCols; c++) {
+      const pv = this.getPvInfo(numCols - 1 - c);
+      const th = document.createElement('th');
+      th.className = `notebook-col-header ${pv.cls}`;
+      th.textContent = pv.label;
+      headerRow.appendChild(th);
+    }
+    headerRow.appendChild(document.createElement('th'));
+    table.appendChild(headerRow);
+
+    // 2. Fila de llevadas opcionales
+    const carryRow = document.createElement('tr');
+    carryRow.innerHTML = '<td></td>';
+    for (let c = 0; c < numCols; c++) {
+      const td = document.createElement('td');
+      if (c < numCols - 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'notebook-cell cell-carry';
+        const cellId = `carry_${c}`;
+        btn.id = cellId;
+        btn.onclick = () => this.notebookFocusCell(cellId);
+        td.appendChild(btn);
+        this.session.notebookState.cells[cellId] = {
+          id: cellId,
+          element: btn,
+          value: '',
+          isOptional: true,
+          role: 'carry'
+        };
+      }
+      carryRow.appendChild(td);
+    }
+    carryRow.appendChild(document.createElement('td'));
+    table.appendChild(carryRow);
+
+    // 3. Filas de sumandos con etiqueta
+    addends.forEach((addend, idx) => {
+      const row = document.createElement('tr');
+      const sAddend = String(addend).padStart(numCols, ' ');
+      const symTd = document.createElement('td');
+      symTd.className = 'notebook-op-symbol';
+      symTd.textContent = idx === addends.length - 1 ? '+' : '';
+      row.appendChild(symTd);
+
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        const char = sAddend[c];
+        if (char !== ' ') {
+          const pv = this.getPvInfo(numCols - 1 - c);
+          td.innerHTML = `<span class="notebook-digit ${pv.cls}">${char}</span>`;
+        }
+        row.appendChild(td);
+      }
+      const labelTd = document.createElement('td');
+      labelTd.className = 'notebook-part-label';
+      labelTd.textContent = 'Sumando';
+      row.appendChild(labelTd);
+      table.appendChild(row);
+    });
+
+    // 4. Línea divisoria
+    const divRow = document.createElement('tr');
+    divRow.className = 'notebook-divider-row';
+    divRow.innerHTML = `<td colspan="${numCols + 2}"><div class="notebook-divider-line"></div></td>`;
+    table.appendChild(divRow);
+
+    // 5. Fila de casillas de resultado con etiqueta Total
+    const ansRow = document.createElement('tr');
+    ansRow.innerHTML = '<td></td>';
+    const sAns = sumStr.padStart(numCols, ' ');
+    const ansCellIds = [];
+
+    for (let c = 0; c < numCols; c++) {
+      const td = document.createElement('td');
+      const expectedChar = sAns[c];
+      if (expectedChar !== ' ') {
+        const cellId = `ans_${c}`;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'notebook-cell';
+        btn.id = cellId;
+        btn.onclick = () => this.notebookFocusCell(cellId);
+        td.appendChild(btn);
+
+        this.session.notebookState.cells[cellId] = {
+          id: cellId,
+          element: btn,
+          expected: expectedChar,
+          value: '',
+          isOptional: false,
+          role: 'result'
+        };
+        ansCellIds.push(cellId);
+      }
+      ansRow.appendChild(td);
+    }
+    const ansLabelTd = document.createElement('td');
+    ansLabelTd.className = 'notebook-part-label highlight';
+    ansLabelTd.textContent = 'Total';
+    ansRow.appendChild(ansLabelTd);
+    table.appendChild(ansRow);
+    paper.appendChild(table);
+
+    // Orden de avance de derecha a izquierda (U -> D -> C -> ...)
+    ansCellIds.reverse();
+    this.session.notebookState.cellOrder = ansCellIds;
+  }
+
+  buildSubtractionNotebook(exercise, paper) {
+    const minuend = exercise.minuend;
+    const subtrahend = exercise.subtrahend;
+    const diff = minuend - subtrahend;
+    const sMin = String(minuend);
+    const sSub = String(subtrahend);
+    const sDiff = String(diff);
+    const numCols = Math.max(sMin.length, sSub.length);
+
+    const table = document.createElement('table');
+    table.className = 'notebook-table';
+
+    // 1. Cabeceras con valor posicional
+    const headerRow = document.createElement('tr');
+    headerRow.innerHTML = '<th></th>';
+    for (let c = 0; c < numCols; c++) {
+      const pv = this.getPvInfo(numCols - 1 - c);
+      const th = document.createElement('th');
+      th.className = `notebook-col-header ${pv.cls}`;
+      th.textContent = pv.label;
+      headerRow.appendChild(th);
+    }
+    headerRow.appendChild(document.createElement('th'));
+    table.appendChild(headerRow);
+
+    // 2. Llevadas opcionales
+    const carryRow = document.createElement('tr');
+    carryRow.innerHTML = '<td></td>';
+    for (let c = 0; c < numCols; c++) {
+      const td = document.createElement('td');
+      if (c < numCols - 1) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'notebook-cell cell-carry';
+        const cellId = `carry_${c}`;
+        btn.id = cellId;
+        btn.onclick = () => this.notebookFocusCell(cellId);
+        td.appendChild(btn);
+        this.session.notebookState.cells[cellId] = {
+          id: cellId,
+          element: btn,
+          value: '',
+          isOptional: true,
+          role: 'carry'
+        };
+      }
+      carryRow.appendChild(td);
+    }
+    carryRow.appendChild(document.createElement('td'));
+    table.appendChild(carryRow);
+
+    // 3. Minuendo con etiqueta
+    const minRow = document.createElement('tr');
+    minRow.innerHTML = '<td class="notebook-op-symbol"></td>';
+    const padMin = sMin.padStart(numCols, ' ');
+    for (let c = 0; c < numCols; c++) {
+      const td = document.createElement('td');
+      if (padMin[c] !== ' ') {
+        const pv = this.getPvInfo(numCols - 1 - c);
+        td.innerHTML = `<span class="notebook-digit ${pv.cls}">${padMin[c]}</span>`;
+      }
+      minRow.appendChild(td);
+    }
+    const minLabel = document.createElement('td');
+    minLabel.className = 'notebook-part-label';
+    minLabel.textContent = 'Minuendo';
+    minRow.appendChild(minLabel);
+    table.appendChild(minRow);
+
+    // 4. Sustraendo con signo '−' y etiqueta
+    const subRow = document.createElement('tr');
+    subRow.innerHTML = '<td class="notebook-op-symbol">−</td>';
+    const padSub = sSub.padStart(numCols, ' ');
+    for (let c = 0; c < numCols; c++) {
+      const td = document.createElement('td');
+      if (padSub[c] !== ' ') {
+        const pv = this.getPvInfo(numCols - 1 - c);
+        td.innerHTML = `<span class="notebook-digit ${pv.cls}">${padSub[c]}</span>`;
+      }
+      subRow.appendChild(td);
+    }
+    const subLabel = document.createElement('td');
+    subLabel.className = 'notebook-part-label';
+    subLabel.textContent = 'Sustraendo';
+    subRow.appendChild(subLabel);
+    table.appendChild(subRow);
+
+    // 5. Línea divisoria
+    const divRow = document.createElement('tr');
+    divRow.className = 'notebook-divider-row';
+    divRow.innerHTML = `<td colspan="${numCols + 2}"><div class="notebook-divider-line"></div></td>`;
+    table.appendChild(divRow);
+
+    // 6. Resultado (Diferencia) con etiqueta
+    const ansRow = document.createElement('tr');
+    ansRow.innerHTML = '<td></td>';
+    const padDiff = sDiff.padStart(numCols, ' ');
+    const ansCellIds = [];
+
+    for (let c = 0; c < numCols; c++) {
+      const td = document.createElement('td');
+      const expectedChar = padDiff[c];
+      if (expectedChar !== ' ') {
+        const cellId = `ans_${c}`;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'notebook-cell';
+        btn.id = cellId;
+        btn.onclick = () => this.notebookFocusCell(cellId);
+        td.appendChild(btn);
+
+        this.session.notebookState.cells[cellId] = {
+          id: cellId,
+          element: btn,
+          expected: expectedChar,
+          value: '',
+          isOptional: false,
+          role: 'result'
+        };
+        ansCellIds.push(cellId);
+      }
+      ansRow.appendChild(td);
+    }
+    const diffLabel = document.createElement('td');
+    diffLabel.className = 'notebook-part-label highlight';
+    diffLabel.textContent = 'Diferencia';
+    ansRow.appendChild(diffLabel);
+    table.appendChild(ansRow);
+    paper.appendChild(table);
+
+    ansCellIds.reverse();
+    this.session.notebookState.cellOrder = ansCellIds;
+  }
+
+  buildMultiplicationNotebook(exercise, paper) {
+    const factor1 = exercise.factor1;
+    const factor2 = exercise.factor2;
+    const ans = factor1 * factor2;
+    const sF1 = String(factor1);
+    const sF2 = String(factor2);
+    const sAns = String(ans);
+
+    if (factor2 < 10) {
+      // MULTIPLICACIÓN POR 1 CIFRA
+      const numCols = Math.max(sAns.length, sF1.length + 1);
+      const table = document.createElement('table');
+      table.className = 'notebook-table';
+
+      // Cabeceras
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th></th>';
+      for (let c = 0; c < numCols; c++) {
+        const pv = this.getPvInfo(numCols - 1 - c);
+        const th = document.createElement('th');
+        th.className = `notebook-col-header ${pv.cls}`;
+        th.textContent = pv.label;
+        headerRow.appendChild(th);
+      }
+      headerRow.appendChild(document.createElement('th'));
+      table.appendChild(headerRow);
+
+      // Llevadas opcionales
+      const carryRow = document.createElement('tr');
+      carryRow.innerHTML = '<td></td>';
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        if (c < numCols - 1) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'notebook-cell cell-carry';
+          const cellId = `carry_${c}`;
+          btn.id = cellId;
+          btn.onclick = () => this.notebookFocusCell(cellId);
+          td.appendChild(btn);
+          this.session.notebookState.cells[cellId] = {
+            id: cellId,
+            element: btn,
+            value: '',
+            isOptional: true,
+            role: 'carry'
+          };
+        }
+        carryRow.appendChild(td);
+      }
+      carryRow.appendChild(document.createElement('td'));
+      table.appendChild(carryRow);
+
+      // Factor 1 con etiqueta
+      const f1Row = document.createElement('tr');
+      f1Row.innerHTML = '<td></td>';
+      const padF1 = sF1.padStart(numCols, ' ');
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        if (padF1[c] !== ' ') {
+          const pv = this.getPvInfo(numCols - 1 - c);
+          td.innerHTML = `<span class="notebook-digit ${pv.cls}">${padF1[c]}</span>`;
+        }
+        f1Row.appendChild(td);
+      }
+      const f1Label = document.createElement('td');
+      f1Label.className = 'notebook-part-label';
+      f1Label.textContent = 'Factor';
+      f1Row.appendChild(f1Label);
+      table.appendChild(f1Row);
+
+      // Factor 2 con '×' y etiqueta
+      const f2Row = document.createElement('tr');
+      f2Row.innerHTML = '<td class="notebook-op-symbol">×</td>';
+      const padF2 = sF2.padStart(numCols, ' ');
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        if (padF2[c] !== ' ') {
+          const pv = this.getPvInfo(numCols - 1 - c);
+          td.innerHTML = `<span class="notebook-digit ${pv.cls}">${padF2[c]}</span>`;
+        }
+        f2Row.appendChild(td);
+      }
+      const f2Label = document.createElement('td');
+      f2Label.className = 'notebook-part-label';
+      f2Label.textContent = 'Factor';
+      f2Row.appendChild(f2Label);
+      table.appendChild(f2Row);
+
+      // Línea divisoria
+      const divRow = document.createElement('tr');
+      divRow.className = 'notebook-divider-row';
+      divRow.innerHTML = `<td colspan="${numCols + 2}"><div class="notebook-divider-line"></div></td>`;
+      table.appendChild(divRow);
+
+      // Resultado con etiqueta Producto
+      const ansRow = document.createElement('tr');
+      ansRow.innerHTML = '<td></td>';
+      const padAns = sAns.padStart(numCols, ' ');
+      const ansCellIds = [];
+
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        const char = padAns[c];
+        if (char !== ' ') {
+          const cellId = `ans_${c}`;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'notebook-cell';
+          btn.id = cellId;
+          btn.onclick = () => this.notebookFocusCell(cellId);
+          td.appendChild(btn);
+
+          this.session.notebookState.cells[cellId] = {
+            id: cellId,
+            element: btn,
+            expected: char,
+            value: '',
+            isOptional: false,
+            role: 'result'
+          };
+          ansCellIds.push(cellId);
+        }
+        ansRow.appendChild(td);
+      }
+      const ansLabel = document.createElement('td');
+      ansLabel.className = 'notebook-part-label highlight';
+      ansLabel.textContent = 'Producto';
+      ansRow.appendChild(ansLabel);
+      table.appendChild(ansRow);
+      paper.appendChild(table);
+
+      ansCellIds.reverse();
+      this.session.notebookState.cellOrder = ansCellIds;
+    } else {
+      // MULTIPLICACIÓN POR 2 CIFRAS
+      const u2 = factor2 % 10;
+      const d2 = Math.floor(factor2 / 10);
+      const part1 = factor1 * u2;
+      const part2 = factor1 * d2;
+      const sP1 = String(part1);
+      const sP2 = String(part2);
+      const numCols = Math.max(sAns.length, sP2.length + 1, sF1.length + 1);
+
+      const table = document.createElement('table');
+      table.className = 'notebook-table';
+
+      // Cabeceras
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th></th>';
+      for (let c = 0; c < numCols; c++) {
+        const pv = this.getPvInfo(numCols - 1 - c);
+        const th = document.createElement('th');
+        th.className = `notebook-col-header ${pv.cls}`;
+        th.textContent = pv.label;
+        headerRow.appendChild(th);
+      }
+      headerRow.appendChild(document.createElement('th'));
+      table.appendChild(headerRow);
+
+      // Factor 1 con etiqueta
+      const f1Row = document.createElement('tr');
+      f1Row.innerHTML = '<td></td>';
+      const padF1 = sF1.padStart(numCols, ' ');
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        if (padF1[c] !== ' ') {
+          const pv = this.getPvInfo(numCols - 1 - c);
+          td.innerHTML = `<span class="notebook-digit ${pv.cls}">${padF1[c]}</span>`;
+        }
+        f1Row.appendChild(td);
+      }
+      const f1Label = document.createElement('td');
+      f1Label.className = 'notebook-part-label';
+      f1Label.textContent = 'Factor';
+      f1Row.appendChild(f1Label);
+      table.appendChild(f1Row);
+
+      // Factor 2 con '×' y etiqueta
+      const f2Row = document.createElement('tr');
+      f2Row.innerHTML = '<td class="notebook-op-symbol">×</td>';
+      const padF2 = sF2.padStart(numCols, ' ');
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        if (padF2[c] !== ' ') {
+          const pv = this.getPvInfo(numCols - 1 - c);
+          td.innerHTML = `<span class="notebook-digit ${pv.cls}">${padF2[c]}</span>`;
+        }
+        f2Row.appendChild(td);
+      }
+      const f2Label = document.createElement('td');
+      f2Label.className = 'notebook-part-label';
+      f2Label.textContent = 'Factor';
+      f2Row.appendChild(f2Label);
+      table.appendChild(f2Row);
+
+      // Línea 1
+      const div1Row = document.createElement('tr');
+      div1Row.className = 'notebook-divider-row';
+      div1Row.innerHTML = `<td colspan="${numCols + 2}"><div class="notebook-divider-line"></div></td>`;
+      table.appendChild(div1Row);
+
+      // Fila 1: 1.er producto parcial (por unidades) con etiqueta
+      const p1Row = document.createElement('tr');
+      p1Row.innerHTML = '<td></td>';
+      const padP1 = sP1.padStart(numCols, ' ');
+      const p1CellIds = [];
+
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        const char = padP1[c];
+        if (char !== ' ') {
+          const cellId = `p1_${c}`;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'notebook-cell';
+          btn.id = cellId;
+          btn.onclick = () => this.notebookFocusCell(cellId);
+          td.appendChild(btn);
+
+          this.session.notebookState.cells[cellId] = {
+            id: cellId,
+            element: btn,
+            expected: char,
+            value: '',
+            isOptional: false,
+            role: 'p1'
+          };
+          p1CellIds.push(cellId);
+        }
+        p1Row.appendChild(td);
+      }
+      const p1Label = document.createElement('td');
+      p1Label.className = 'notebook-part-label';
+      p1Label.textContent = '1.er prod. parcial';
+      p1Row.appendChild(p1Label);
+      table.appendChild(p1Row);
+
+      // Fila 2: 2.º producto parcial (por decenas, desplazado 1 columna con signo '+') con etiqueta
+      const p2Row = document.createElement('tr');
+      p2Row.innerHTML = '<td class="notebook-op-symbol">+</td>';
+      const padP2 = sP2.padStart(numCols - 1, ' ');
+      const p2CellIds = [];
+
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        if (c === numCols - 1) {
+          td.innerHTML = '<div class="notebook-cell cell-blocked" title="Casilla desplazada en el segundo producto parcial">·</div>';
+        } else {
+          const char = padP2[c];
+          if (char !== ' ') {
+            const cellId = `p2_${c}`;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'notebook-cell';
+            btn.id = cellId;
+            btn.onclick = () => this.notebookFocusCell(cellId);
+            td.appendChild(btn);
+
+            this.session.notebookState.cells[cellId] = {
+              id: cellId,
+              element: btn,
+              expected: char,
+              value: '',
+              isOptional: false,
+              role: 'p2'
+            };
+            p2CellIds.push(cellId);
+          }
+        }
+        p2Row.appendChild(td);
+      }
+      const p2Label = document.createElement('td');
+      p2Label.className = 'notebook-part-label';
+      p2Label.textContent = '2.º prod. parcial';
+      p2Row.appendChild(p2Label);
+      table.appendChild(p2Row);
+
+      // Línea 2
+      const div2Row = document.createElement('tr');
+      div2Row.className = 'notebook-divider-row';
+      div2Row.innerHTML = `<td colspan="${numCols + 2}"><div class="notebook-divider-line"></div></td>`;
+      table.appendChild(div2Row);
+
+      // Fila 3: Producto final (suma de ambos productos) con etiqueta Producto total
+      const totRow = document.createElement('tr');
+      totRow.innerHTML = '<td></td>';
+      const padTot = sAns.padStart(numCols, ' ');
+      const totCellIds = [];
+
+      for (let c = 0; c < numCols; c++) {
+        const td = document.createElement('td');
+        const char = padTot[c];
+        if (char !== ' ') {
+          const cellId = `tot_${c}`;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'notebook-cell';
+          btn.id = cellId;
+          btn.onclick = () => this.notebookFocusCell(cellId);
+          td.appendChild(btn);
+
+          this.session.notebookState.cells[cellId] = {
+            id: cellId,
+            element: btn,
+            expected: char,
+            value: '',
+            isOptional: false,
+            role: 'tot'
+          };
+          totCellIds.push(cellId);
+        }
+        totRow.appendChild(td);
+      }
+      const totLabel = document.createElement('td');
+      totLabel.className = 'notebook-part-label highlight';
+      totLabel.textContent = 'Producto total';
+      totRow.appendChild(totLabel);
+      table.appendChild(totRow);
+      paper.appendChild(table);
+
+      // Auto-avance: p1 de derecha a izquierda, luego p2 de derecha a izquierda, luego tot de derecha a izquierda
+      p1CellIds.reverse();
+      p2CellIds.reverse();
+      totCellIds.reverse();
+      this.session.notebookState.cellOrder = [...p1CellIds, ...p2CellIds, ...totCellIds];
+    }
+  }
+
+  buildDivisionNotebook(exercise, paper) {
+    const dividend = exercise.dividend;
+    const divisor = exercise.divisor;
+    const divData = QuestionGenerator.buildDivisionSteps(dividend, divisor);
+    this.session.notebookState.divisionData = divData;
+
+    const sDvd = String(dividend);
+    const sDiv = String(divisor);
+    const nDvd = sDvd.length;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'division-table-container';
+
+    // 1. Lado Izquierdo: Dividendo y pasos intermedios
+    const dvdSide = document.createElement('div');
+    dvdSide.className = 'division-dividend-side';
+
+    // Etiqueta Dividendo
+    const dvdLabel = document.createElement('div');
+    dvdLabel.className = 'division-side-label';
+    dvdLabel.textContent = 'Dividendo';
+    dvdSide.appendChild(dvdLabel);
+
+    // Fila del dividendo
+    const dvdRow = document.createElement('div');
+    dvdRow.className = 'division-dividend-row';
+    for (let c = 0; c < nDvd; c++) {
+      const pv = this.getPvInfo(nDvd - 1 - c);
+      const span = document.createElement('span');
+      span.className = `notebook-digit ${pv.cls}`;
+      span.textContent = sDvd[c];
+      dvdRow.appendChild(span);
+    }
+    dvdSide.appendChild(dvdRow);
+
+    // Filas intermedias
+    divData.steps.forEach((step, sIdx) => {
+      const row = document.createElement('div');
+      row.className = 'division-intermediate-row';
+
+      const isLast = (sIdx === divData.steps.length - 1);
+      const sRem = String(step.remainder);
+      const remStartCol = step.colEnd - sRem.length + 1;
+      const broughtCol = step.colEnd + 1;
+
+      for (let c = 0; c < nDvd; c++) {
+        if (!isLast) {
+          if (c >= remStartCol && c <= step.colEnd) {
+            const digitIdx = c - remStartCol;
+            const cellId = `div_rem_${sIdx}_${digitIdx}`;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'notebook-cell';
+            btn.id = cellId;
+            btn.onclick = () => this.notebookFocusCell(cellId);
+            row.appendChild(btn);
+
+            this.session.notebookState.cells[cellId] = {
+              id: cellId,
+              element: btn,
+              expected: sRem[digitIdx],
+              value: '',
+              isOptional: false,
+              role: 'div_rem'
+            };
+          } else if (c === broughtCol && sIdx < divData.steps.length - 1) {
+            const nextBrought = divData.steps[sIdx + 1].broughtDown;
+            const cellId = `div_brought_${sIdx}`;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'notebook-cell';
+            btn.id = cellId;
+            btn.onclick = () => this.notebookFocusCell(cellId);
+            row.appendChild(btn);
+
+            this.session.notebookState.cells[cellId] = {
+              id: cellId,
+              element: btn,
+              expected: String(nextBrought),
+              value: '',
+              isOptional: false,
+              role: 'div_brought'
+            };
+          } else {
+            const spacer = document.createElement('span');
+            spacer.style.width = '48px';
+            spacer.style.height = '48px';
+            spacer.style.display = 'inline-block';
+            row.appendChild(spacer);
+          }
+        } else {
+          // Último paso: Resto definitivo destacado con etiqueta Resto
+          if (c >= remStartCol && c <= step.colEnd) {
+            const digitIdx = c - remStartCol;
+            const cellId = `div_final_rem_${digitIdx}`;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'notebook-cell cell-remainder';
+            btn.id = cellId;
+            btn.title = 'Resto definitivo de la división';
+            btn.onclick = () => this.notebookFocusCell(cellId);
+            row.appendChild(btn);
+
+            this.session.notebookState.cells[cellId] = {
+              id: cellId,
+              element: btn,
+              expected: sRem[digitIdx],
+              value: '',
+              isOptional: false,
+              role: 'div_final_rem'
+            };
+          } else {
+            const spacer = document.createElement('span');
+            spacer.style.width = '48px';
+            spacer.style.height = '48px';
+            spacer.style.display = 'inline-block';
+            row.appendChild(spacer);
+          }
+        }
+      }
+
+      dvdSide.appendChild(row);
+
+      // Etiqueta 'Resto' justo debajo de la última fila, alineada a la derecha en dvdSide
+      if (isLast) {
+        const remBadge = document.createElement('div');
+        remBadge.className = 'division-rem-badge';
+        remBadge.style.marginTop = '4px';
+        remBadge.textContent = 'Resto';
+        dvdSide.appendChild(remBadge);
+      }
+    });
+    wrap.appendChild(dvdSide);
+
+    // 2. Lado Derecho: Divisor y Cociente
+    const divSide = document.createElement('div');
+    divSide.className = 'division-divisor-side';
+
+    // Etiqueta Divisor
+    const divLabel = document.createElement('div');
+    divLabel.className = 'division-side-label';
+    divLabel.textContent = 'Divisor';
+    divSide.appendChild(divLabel);
+
+    // Fila Divisor
+    const divRow = document.createElement('div');
+    divRow.className = 'division-divisor-row';
+    for (let c = 0; c < sDiv.length; c++) {
+      const span = document.createElement('span');
+      span.className = 'notebook-digit';
+      span.textContent = sDiv[c];
+      divRow.appendChild(span);
+    }
+    divSide.appendChild(divRow);
+
+    // Etiqueta Cociente
+    const qLabel = document.createElement('div');
+    qLabel.className = 'division-side-label';
+    qLabel.textContent = 'Cociente';
+    divSide.appendChild(qLabel);
+
+    // Fila Cociente
+    const qRow = document.createElement('div');
+    qRow.className = 'division-quotient-row';
+    divData.quotientDigits.forEach((qDigit, qIdx) => {
+      const cellId = `div_q_${qIdx}`;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'notebook-cell';
+      btn.id = cellId;
+      btn.onclick = () => this.notebookFocusCell(cellId);
+      qRow.appendChild(btn);
+
+      this.session.notebookState.cells[cellId] = {
+        id: cellId,
+        element: btn,
+        expected: String(qDigit),
+        value: '',
+        isOptional: false,
+        role: 'quotient'
+      };
+    });
+    divSide.appendChild(qRow);
+    wrap.appendChild(divSide);
+
+    paper.appendChild(wrap);
+
+    // Orden de avance natural en la división española:
+    // div_q_0 -> casillas de div_rem_0_* -> div_brought_0 -> div_q_1 -> casillas de div_final_rem_*
+    const naturalOrder = [];
+    divData.steps.forEach((step, sIdx) => {
+      naturalOrder.push(`div_q_${sIdx}`);
+
+      const isLast = (sIdx === divData.steps.length - 1);
+      const sRem = String(step.remainder);
+
+      for (let digitIdx = 0; digitIdx < sRem.length; digitIdx++) {
+        if (!isLast) {
+          naturalOrder.push(`div_rem_${sIdx}_${digitIdx}`);
+        } else {
+          naturalOrder.push(`div_final_rem_${digitIdx}`);
+        }
+      }
+
+      if (!isLast) {
+        naturalOrder.push(`div_brought_${sIdx}`);
+      }
+    });
+
+    this.session.notebookState.cellOrder = naturalOrder;
+  }
+
+  notebookFocusCell(cellId) {
+    const state = this.session && this.session.notebookState;
+    if (!state) return;
+    if (state.activeCellId && state.cells[state.activeCellId]) {
+      const prevEl = state.cells[state.activeCellId].element;
+      if (prevEl) prevEl.classList.remove('cell-active');
+    }
+    state.activeCellId = cellId;
+    if (cellId && state.cells[cellId]) {
+      const nextEl = state.cells[cellId].element;
+      if (nextEl) nextEl.classList.add('cell-active');
+    }
+  }
+
+  notebookKeypadInput(digit) {
+    this.sound.playPop();
+    const state = this.session && this.session.notebookState;
+    if (!state) return;
+
+    let cell = state.activeCellId ? state.cells[state.activeCellId] : null;
+    if (!cell) {
+      const firstId = state.cellOrder[0];
+      if (firstId) {
+        this.notebookFocusCell(firstId);
+        cell = state.cells[firstId];
+      }
+    }
+    if (!cell) return;
+
+    cell.value = String(digit);
+    if (cell.element) {
+      cell.element.textContent = digit;
+      cell.element.classList.remove('cell-incorrect');
+    }
+
+    // Auto-avance a la siguiente casilla en cellOrder
+    const curIdx = state.cellOrder.indexOf(cell.id);
+    if (curIdx >= 0 && curIdx < state.cellOrder.length - 1) {
+      const nextId = state.cellOrder[curIdx + 1];
+      this.notebookFocusCell(nextId);
+    }
+  }
+
+  notebookKeypadBackspace() {
+    this.sound.playPop();
+    const state = this.session && this.session.notebookState;
+    if (!state) return;
+
+    const cell = state.activeCellId ? state.cells[state.activeCellId] : null;
+    if (!cell) return;
+
+    if (cell.value !== '' && cell.value !== null && cell.value !== undefined) {
+      cell.value = '';
+      if (cell.element) {
+        cell.element.textContent = '';
+        cell.element.classList.remove('cell-incorrect');
+      }
+    } else {
+      const curIdx = state.cellOrder.indexOf(cell.id);
+      if (curIdx > 0) {
+        const prevId = state.cellOrder[curIdx - 1];
+        const prevCell = state.cells[prevId];
+        if (prevCell) {
+          prevCell.value = '';
+          if (prevCell.element) {
+            prevCell.element.textContent = '';
+            prevCell.element.classList.remove('cell-incorrect');
+          }
+          this.notebookFocusCell(prevId);
+        }
+      }
+    }
+  }
+
+  notebookKeypadNav(delta) {
+    this.sound.playPop();
+    const state = this.session && this.session.notebookState;
+    if (!state) return;
+
+    const curIdx = state.activeCellId ? state.cellOrder.indexOf(state.activeCellId) : -1;
+    let nextIdx = curIdx + delta;
+    if (nextIdx < 0) nextIdx = 0;
+    if (nextIdx >= state.cellOrder.length) nextIdx = state.cellOrder.length - 1;
+
+    const targetId = state.cellOrder[nextIdx];
+    if (targetId) this.notebookFocusCell(targetId);
   }
 
   numpadAppend(digit) {
@@ -4346,13 +5431,144 @@ class SmartickApp {
   // COMPROBACIÓN DE RESPUESTA CON AJUSTE DINÁMICO DE DIFICULTAD
   // =================================================================
   submitCurrentAnswer() {
+    const ex = this.session && this.session.currentExercise;
+    if (!ex) return;
+
+    // Validación inteligente para el Modo Cuaderno
+    if (ex.type === 'notebook') {
+      const state = this.session.notebookState;
+      if (!state) return;
+
+      // 1. Comprobar casillas obligatorias vacías
+      let firstEmptyId = null;
+      for (const id of state.cellOrder) {
+        const cell = state.cells[id];
+        if (!cell.isOptional && (cell.value === '' || cell.value === null || cell.value === undefined)) {
+          firstEmptyId = id;
+          break;
+        }
+      }
+
+      if (firstEmptyId) {
+        this.sound.playWrong();
+        this.showToast('¡Rellena todas las casillas del cuaderno antes de comprobar!', '✏️', '#f59e0b');
+        this.notebookFocusCell(firstEmptyId);
+        return;
+      }
+
+      // 2. Validar cada casilla
+      let allCorrect = true;
+      let firstWrongId = null;
+      let wrongRole = null;
+
+      for (const id of state.cellOrder) {
+        const cell = state.cells[id];
+        const actual = String(cell.value || '');
+        const expected = String(cell.expected || '');
+        const el = cell.element;
+
+        if (actual === expected) {
+          if (el) {
+            el.classList.add('cell-correct');
+            el.classList.remove('cell-incorrect');
+          }
+        } else {
+          allCorrect = false;
+          if (!firstWrongId) {
+            firstWrongId = id;
+            wrongRole = cell.role;
+          }
+          if (el) {
+            el.classList.add('cell-incorrect');
+            el.classList.remove('cell-correct');
+            el.classList.add('cell-shake');
+            setTimeout(() => el && el.classList.remove('cell-shake'), 400);
+          }
+        }
+      }
+
+      // Contabilizar intento en modo cuaderno
+      this.session.notebookAttempts = (this.session.notebookAttempts || 0) + 1;
+
+      if (!allCorrect) {
+        let helpfulHint = ex.hint || '¡Revisa los números con calma!';
+        if (ex.op === 'add') {
+          helpfulHint = 'Revisa la suma columna a columna. ¡No olvides sumar la cifra que te llevas!';
+        } else if (ex.op === 'sub') {
+          helpfulHint = 'Revisa la resta. Si la cifra superior es menor que la inferior, pide prestada una decena.';
+        } else if (ex.op === 'mul') {
+          if (wrongRole === 'p1') {
+            helpfulHint = 'Revisa el 1.er producto parcial: multiplica el número de arriba por las unidades.';
+          } else if (wrongRole === 'p2') {
+            helpfulHint = 'Revisa el 2.º producto parcial: multiplica por las decenas y recuerda dejar el hueco (·).';
+          } else {
+            helpfulHint = 'Revisa la suma final de los dos productos parciales.';
+          }
+        } else if (ex.op === 'div') {
+          if (wrongRole === 'quotient') {
+            helpfulHint = 'Revisa las cifras del cociente: calcula cuántas veces cabe el divisor en cada paso.';
+          } else {
+            helpfulHint = 'Revisa las restas intermedias y las cifras que bajan en cada paso.';
+          }
+        }
+
+        const hintBox = document.getElementById('hint-box');
+        const hintText = document.getElementById('hint-text');
+        if (hintText) hintText.textContent = helpfulHint;
+        if (hintBox) hintBox.style.display = 'block';
+
+        if (firstWrongId) this.notebookFocusCell(firstWrongId);
+
+        this.sound.playWrong();
+        this.session.streak = 0;
+        this.session.levelStreak = 0;
+        this.renderAvatar();
+        const streakCountEl = document.getElementById('current-streak-count');
+        if (streakCountEl) streakCountEl.textContent = 'x0';
+
+        const shieldBubble = document.getElementById('combat-shield-bubble');
+        const hintBtn = document.getElementById('btn-request-hint');
+        if (shieldBubble) {
+          shieldBubble.style.display = 'block';
+          shieldBubble.classList.add('shield-pulse');
+          setTimeout(() => {
+            if (shieldBubble) {
+              shieldBubble.style.display = 'none';
+              shieldBubble.classList.remove('shield-pulse');
+            }
+          }, 1200);
+        }
+        if (hintBtn) hintBtn.classList.add('hint-gentle-highlight');
+
+        // SEGUNDO INTENTO EN MODO CUADERNO:
+        // En el primer fallo (notebookAttempts === 1), no abrimos modal ni saltamos ejercicio:
+        // Se dejan visibles las casillas en verde y rojo, la pista en #hint-box y el foco en la primera errónea.
+        if (this.session.notebookAttempts === 1) {
+          this.showToast('¡Casi! Corrige las casillas en rojo y vuelve a comprobar ✨', '✏️', '#f59e0b');
+          return;
+        }
+
+        // Si vuelve a fallar en el segundo intento (notebookAttempts >= 2), se muestra el modal explicativo
+        if (this.session.mode === 'speed') {
+          this.session.currentIndex++;
+          setTimeout(() => this.loadNextExercise(), 350);
+        } else {
+          setTimeout(() => {
+            this.showFeedbackModal(false, 0, null);
+          }, 500);
+        }
+        return;
+      }
+
+      this.session.selectedAnswer = ex.correct;
+    }
+
     if (this.session.selectedAnswer === null || this.session.selectedAnswer === undefined) {
       this.sound.playWrong();
       this.showToast('¡Elige o escribe una respuesta antes de comprobar!', '⚠️', '#f59e0b');
       return;
     }
 
-    const ex = this.session.currentExercise;
     const isCorrect = String(this.session.selectedAnswer).trim().toLowerCase() === String(ex.correct).trim().toLowerCase();
 
     let levelNotice = null;
@@ -4533,7 +5749,15 @@ class SmartickApp {
         title.textContent = '¡Casi lo tienes!';
         title.style.color = 'var(--orange-dark)';
       }
-      if (msg) msg.textContent = `La respuesta correcta era: ${this.session.currentExercise.correct}. ¡Revisa la pista y sigue practicando!`;
+      if (msg) {
+        if (this.session && this.session.currentExercise && this.session.currentExercise.op === 'div') {
+          const quotientAns = this.session.currentExercise.correct;
+          const remainderAns = this.session.currentExercise.dividend % this.session.currentExercise.divisor;
+          msg.textContent = `La respuesta correcta era: Cociente ${quotientAns} y Resto ${remainderAns}. ¡Revisa la pista y sigue practicando!`;
+        } else {
+          msg.textContent = `La respuesta correcta era: ${this.session.currentExercise.correct}. ¡Revisa la pista y sigue practicando!`;
+        }
+      }
       if (reward) reward.style.display = 'none';
     }
 

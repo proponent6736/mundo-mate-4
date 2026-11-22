@@ -1,7 +1,7 @@
 // Service Worker de MundoMate: Guerreros del Cálculo (Edelvives 4º Primaria)
 // Estrategia Cache-First para funcionamiento 100% offline en tablet Android y GitHub Pages
 
-const CACHE_NAME = 'mundomate-v1';
+const CACHE_NAME = 'mundomate-v2';
 
 // Rutas relativas obligatorias para que funcione en cualquier subcarpeta de GitHub Pages
 const PRECACHE_ASSETS = [

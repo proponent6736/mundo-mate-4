@@ -51,6 +51,31 @@
   --astral-silver: #f8fafc;
   --astral-glow: rgba(255, 255, 255, 0.85);
 
+  /* Código de colores unificado para el Valor Posicional (Estándar Primaria) */
+  --pv-u-color: #dc2626;
+  --pv-u-bg: #fee2e2;
+  --pv-u-border: #fca5a5;
+
+  --pv-d-color: #16a34a;
+  --pv-d-bg: #dcfce7;
+  --pv-d-border: #86efac;
+
+  --pv-c-color: #2563eb;
+  --pv-c-bg: #dbeafe;
+  --pv-c-border: #93c5fd;
+
+  --pv-um-color: #d97706;
+  --pv-um-bg: #fef3c7;
+  --pv-um-border: #fcd34d;
+
+  --pv-dm-color: #7c3aed;
+  --pv-dm-bg: #f3e8ff;
+  --pv-dm-border: #c4b5fd;
+
+  --pv-cm-color: #475569;
+  --pv-cm-bg: #f1f5f9;
+  --pv-cm-border: #cbd5e1;
+
   --border-radius-lg: 24px;
   --border-radius-md: 16px;
   --border-radius-sm: 10px;
@@ -1470,11 +1495,11 @@ body {
   flex-direction: column;
   align-items: center;
 }
-.decomp-chip.dm { background: #dbeafe; color: #1e40af; border: 2px solid #93c5fd; }
-.decomp-chip.um { background: #dcfce7; color: #166534; border: 2px solid #86efac; }
-.decomp-chip.c  { background: #fef3c7; color: #92400e; border: 2px solid #fde047; }
-.decomp-chip.d  { background: #ffedd5; color: #9a3412; border: 2px solid #fdba74; }
-.decomp-chip.u  { background: #fce7f3; color: #9d174d; border: 2px solid #f472b6; }
+.decomp-chip.dm { background: var(--pv-dm-bg); color: var(--pv-dm-color); border: 2px solid var(--pv-dm-border); }
+.decomp-chip.um { background: var(--pv-um-bg); color: var(--pv-um-color); border: 2px solid var(--pv-um-border); }
+.decomp-chip.c  { background: var(--pv-c-bg); color: var(--pv-c-color); border: 2px solid var(--pv-c-border); }
+.decomp-chip.d  { background: var(--pv-d-bg); color: var(--pv-d-color); border: 2px solid var(--pv-d-border); }
+.decomp-chip.u  { background: var(--pv-u-bg); color: var(--pv-u-color); border: 2px solid var(--pv-u-border); }
 .decomp-sub {
   font-size: 0.72rem;
   font-weight: 700;
@@ -2362,6 +2387,46 @@ body {
 .btn-table-single:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #cbd5e1;
+}
+
+/* Sección Nivel Experto (2 cifras) en Modal de Tablas */
+.tables-expert-section {
+  margin: 16px 0 20px 0;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.05));
+  border: 2px dashed #f59e0b;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.tables-expert-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.tables-expert-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.btn-table-expert {
+  border-color: #f59e0b !important;
+  background: #fffbeb !important;
+  color: #92400e !important;
+  font-weight: 800;
+  box-shadow: 0 3px 0 #fcd34d !important;
+}
+
+.btn-table-expert:hover {
+  background: #fef3c7 !important;
+  border-color: #d97706 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #f59e0b !important;
 }
 
 .tables-modal-footer {
@@ -3427,6 +3492,435 @@ body {
   pointer-events: none;
   z-index: 2000;
 }
+
+/* ===================================================================
+   MODO CUADERNO ESCOLAR INTERACTIVO (CUADRÍCULA Y VALOR POSICIONAL)
+   =================================================================== */
+
+/* Clases de utilidad para el valor posicional */
+.pv-u  { color: var(--pv-u-color) !important; font-weight: 800; }
+.pv-d  { color: var(--pv-d-color) !important; font-weight: 800; }
+.pv-c  { color: var(--pv-c-color) !important; font-weight: 800; }
+.pv-um { color: var(--pv-um-color) !important; font-weight: 800; }
+.pv-dm { color: var(--pv-dm-color) !important; font-weight: 800; }
+.pv-cm { color: var(--pv-cm-color) !important; font-weight: 800; }
+
+.notebook-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  gap: 12px;
+}
+
+/* Leyenda discreta de valor posicional en una sola fila */
+.notebook-pv-legend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  user-select: none;
+}
+
+.pv-pill {
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+}
+
+.pv-pill.u  { color: var(--pv-u-color); background: var(--pv-u-bg); border: 1px solid var(--pv-u-border); }
+.pv-pill.d  { color: var(--pv-d-color); background: var(--pv-d-bg); border: 1px solid var(--pv-d-border); }
+.pv-pill.c  { color: var(--pv-c-color); background: var(--pv-c-bg); border: 1px solid var(--pv-c-border); }
+.pv-pill.um { color: var(--pv-um-color); background: var(--pv-um-bg); border: 1px solid var(--pv-um-border); }
+.pv-pill.dm { color: var(--pv-dm-color); background: var(--pv-dm-bg); border: 1px solid var(--pv-dm-border); }
+.pv-pill.cm { color: var(--pv-cm-color); background: var(--pv-cm-bg); border: 1px solid var(--pv-cm-border); }
+
+.pv-legend-sep {
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Papel de cuaderno escolar con cuadrícula suave y margen rojo */
+.notebook-paper {
+  position: relative;
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(to right, rgba(147, 197, 253, 0.28) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 197, 253, 0.28) 1px, transparent 1px);
+  background-size: 26px 26px;
+  border: 2px solid #cbd5e1;
+  border-left: 5px solid #ef4444; /* Margen clásico de cuaderno español */
+  border-radius: 16px;
+  padding: 16px 20px 20px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: auto;
+}
+
+/* Tabla de operaciones verticales (Suma, Resta, Multiplicación) */
+.notebook-table {
+  border-collapse: separate;
+  border-spacing: 4px;
+  margin: 0 auto;
+}
+
+.notebook-table td, .notebook-table th {
+  text-align: center;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+.notebook-col-header {
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 4px 6px;
+  border-radius: 6px;
+  user-select: none;
+}
+
+.notebook-op-symbol {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #475569;
+  width: 32px;
+  text-align: center;
+}
+
+.notebook-digit {
+  font-size: 1.65rem;
+  font-weight: 800;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  display: inline-block;
+  user-select: none;
+}
+
+.notebook-divider-row td {
+  padding: 0;
+}
+
+.notebook-divider-line {
+  height: 3.5px;
+  background: #1e293b;
+  border-radius: 2px;
+  margin: 4px 0;
+  width: 100%;
+}
+
+/* Etiquetas pedagógicas de las partes de la operación */
+.notebook-part-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 10px !important;
+  text-align: left !important;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.notebook-part-label.highlight {
+  color: #2563eb;
+  font-weight: 900;
+}
+
+/* Casillas interactivas para rellenar cifras (SIN INPUTS NATIVOS) */
+.notebook-cell {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #94a3b8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 1.6rem;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  user-select: none;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 0;
+  touch-action: manipulation;
+}
+
+.notebook-cell:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+/* Casilla enfocada / activa */
+.notebook-cell.cell-active {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35) !important;
+  transform: scale(1.06);
+  z-index: 2;
+}
+
+/* Casilla de llevadas (más compacta y opcional) */
+.notebook-cell.cell-carry {
+  width: 32px;
+  height: 32px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 6px;
+  border: 1.5px dashed #94a3b8;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2px;
+}
+
+.notebook-cell.cell-carry.cell-active {
+  border-color: #f59e0b !important;
+  background: #fffbeb !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Casilla bloqueada / desplazada (ej. unidades en 2º producto parcial) */
+.notebook-cell.cell-blocked {
+  background: #f1f5f9 !important;
+  border: 2px dashed #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed;
+  font-size: 1.8rem;
+  box-shadow: none;
+}
+
+/* Estados de validación */
+.notebook-cell.cell-correct {
+  border-color: #16a34a !important;
+  background: #dcfce7 !important;
+  color: #15803d !important;
+}
+
+.notebook-cell.cell-incorrect {
+  border-color: #dc2626 !important;
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+.cell-shake {
+  animation: cellShakeAnim 0.35s ease;
+}
+
+@keyframes cellShakeAnim {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+/* Estilos de la Caja de División Tradicional Española */
+.division-table-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin: 6px auto;
+}
+
+.division-dividend-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 8px;
+}
+
+.division-side-label {
+  font-size: 0.70rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+  user-select: none;
+}
+
+.division-rem-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+  font-size: 0.70rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-top: 4px;
+  display: inline-block;
+  user-select: none;
+}
+
+.division-dividend-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  height: 52px;
+}
+
+.division-intermediate-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  height: 52px;
+  margin-top: 3px;
+}
+
+/* Caja angular del divisor y cociente: |____ */
+.division-divisor-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 3.5px solid #1e293b;
+  padding-left: 10px;
+}
+
+.division-divisor-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 52px;
+  border-bottom: 3.5px solid #1e293b;
+  padding-bottom: 4px;
+  min-width: 100px;
+}
+
+.division-quotient-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding-top: 6px;
+}
+
+.division-step-arrow {
+  font-size: 0.9rem;
+  color: #3b82f6;
+  font-weight: 800;
+  margin-right: 2px;
+}
+
+.cell-remainder {
+  border-color: #f59e0b !important;
+  background: #fffbeb;
+}
+
+.cell-remainder.cell-active {
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.35) !important;
+}
+
+/* Teclado Táctil en Pantalla para Tablet (0-9, Nav y Borrar) */
+.notebook-keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+  margin-top: 4px;
+  user-select: none;
+}
+
+.keypad-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+
+.btn-keypad {
+  flex: 1;
+  min-height: 50px;
+  background: #ffffff;
+  color: #1e293b;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1.45rem;
+  font-weight: 800;
+  box-shadow: 0 4px 0 #94a3b8;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+
+.btn-keypad:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #94a3b8;
+  background: #f1f5f9;
+}
+
+.btn-keypad-nav {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  box-shadow: 0 4px 0 #bfdbfe;
+  font-size: 1.5rem;
+}
+
+.btn-keypad-nav:active {
+  box-shadow: 0 1px 0 #bfdbfe;
+  background: #dbeafe;
+}
+
+.btn-keypad-del {
+  flex: 1.8;
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+  box-shadow: 0 4px 0 #fecaca;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.btn-keypad-del:active {
+  box-shadow: 0 1px 0 #fecaca;
+  background: #fee2e2;
+}
+
+/* Optimización de ergonomía y espacio para Modo Cuaderno en pantalla de ejercicio */
+.exercise-card:has(.notebook-area) {
+  padding: 18px 24px;
+}
+.exercise-card:has(.notebook-area) .combat-arena {
+  margin: 4px 0 10px 0;
+  padding: 6px 14px;
+}
+.exercise-card:has(.notebook-area) .question-box h2 {
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+.exercise-card:has(.notebook-area) .notebook-area {
+  gap: 8px;
+}
+
+
 
 /* ===================================================================
    RESPONSIVE DESIGN PARA PANTALLAS MÁS PEQUEÑAS / TABLETS
