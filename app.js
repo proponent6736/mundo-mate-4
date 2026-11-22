@@ -859,28 +859,26 @@ class QuestionGenerator {
     const chosen = subtopics[Math.floor(Math.random() * subtopics.length)];
 
     if (chosen === 'fraction_visual') {
-      const den = [3, 4, 5, 6, 8][Math.floor(Math.random() * 5)];
+      const den = [3, 4, 5, 6, 8, 10, 12][Math.floor(Math.random() * 7)];
       const num = Math.floor(Math.random() * (den - 1)) + 1;
-      const visual = this.renderFractionSVG(num, den);
-      const correctStr = `${num}/${den}`;
-      const optSet = new Set([correctStr]);
-      for (let i = 1; i <= den; i++) {
-        if (i !== num) optSet.add(`${i}/${den}`);
-      }
-      let ext = 1;
-      while (optSet.size < 4) { optSet.add(`${num}/${den + ext}`); ext++; }
+      const isBar = Math.random() < 0.5;
+      const visual = isBar ? this.renderFractionBarSVG(num, den) : this.renderFractionSVG(num, den);
+      const shapeWord = isBar ? 'de la barra' : 'de la figura';
       return {
         topic: `U5: Fracción Visual (Nivel ${level})`,
-        question: `¿Qué fracción de la pizza está sombreada en naranja?`,
+        question: `¿Qué fracción ${shapeWord} está sombreada en naranja? Escribe el numerador y el denominador:`,
         visual: visual,
         hint: `El numerador (arriba) indica las partes sombreadas (${num}) y el denominador (abajo) el total de partes (${den}).`,
-        correct: correctStr,
-        options: this.shuffleArray(Array.from(optSet).slice(0, 4)),
-        type: 'quiz'
+        expectedNum: num,
+        expectedDen: den,
+        correct: `${num}/${den}`,
+        type: 'notebook',
+        op: 'frac',
+        fracType: 'visual'
       };
     } else if (chosen === 'fraction_compare') {
       if (level <= 2) {
-        const den = [6, 7, 8, 9, 10][Math.floor(Math.random() * 5)];
+        const den = [6, 7, 8, 9, 10, 12][Math.floor(Math.random() * 6)];
         const num1 = Math.floor(Math.random() * (den - 3)) + 1;
         const num2 = num1 + 2;
         return {
@@ -893,7 +891,7 @@ class QuestionGenerator {
         };
       } else {
         const num = Math.floor(Math.random() * 4) + 2; // 2 a 5
-        const dens = [3, 4, 5, 6];
+        const dens = [3, 4, 5, 6, 8, 10];
         const den1 = dens[Math.floor(Math.random() * dens.length)];
         const den2 = den1 + Math.floor(Math.random() * 3) + 2; // den2 > den1
         return {
@@ -908,31 +906,36 @@ class QuestionGenerator {
     } else if (chosen === 'fraction_ops') {
       const isAdd = Math.random() > 0.4;
       const den = [6, 8, 9, 10, 12][Math.floor(Math.random() * 5)];
+      let a, b, resultNum, fracOp;
       if (isAdd) {
-        const a = Math.floor(Math.random() * 3) + 1;
-        const b = Math.floor(Math.random() * 3) + 2;
-        const ans = `${a + b}/${den}`;
-        return {
-          topic: `U5: Suma de Fracciones (Nivel ${level})`,
-          question: `Calcula: ${a}/${den} + ${b}/${den}`,
-          hint: `Con el mismo denominador, sumamos los numeradores (${a} + ${b} = ${a+b}) y dejamos el mismo denominador (${den}).`,
-          correct: ans,
-          options: this.shuffleArray([ans, `${a + b}/${den * 2}`, `${a}/${den}`, `${Math.max(1, a + b - 1)}/${den}`]),
-          type: 'quiz'
-        };
+        a = Math.floor(Math.random() * 3) + 1;
+        b = Math.floor(Math.random() * 3) + 1;
+        resultNum = a + b;
+        fracOp = '+';
       } else {
-        const a = Math.floor(Math.random() * 3) + 4;
-        const b = Math.floor(Math.random() * 2) + 1;
-        const ans = `${a - b}/${den}`;
-        return {
-          topic: `U5: Resta de Fracciones (Nivel ${level})`,
-          question: `Calcula: ${a}/${den} - ${b}/${den}`,
-          hint: `Restamos los numeradores (${a} - ${b} = ${a-b}) y mantenemos el denominador común (${den}).`,
-          correct: ans,
-          options: this.shuffleArray([ans, `${a - b}/${den - b}`, `${a}/${den}`, `${a + b}/${den}`]),
-          type: 'quiz'
-        };
+        a = Math.floor(Math.random() * 3) + 4;
+        b = Math.floor(Math.random() * 2) + 1;
+        resultNum = a - b;
+        fracOp = '−';
       }
+      return {
+        topic: isAdd ? `U5: Suma de Fracciones (Nivel ${level})` : `U5: Resta de Fracciones (Nivel ${level})`,
+        question: isAdd
+          ? `Calcula la suma en tu cuaderno completando el numerador y el denominador:`
+          : `Calcula la resta en tu cuaderno completando el numerador y el denominador:`,
+        hint: isAdd
+          ? `Con el mismo denominador, sumamos los numeradores (${a} + ${b} = ${resultNum}) y dejamos el mismo denominador (${den}).`
+          : `Con el mismo denominador, restamos los numeradores (${a} − ${b} = ${resultNum}) y mantenemos el denominador común (${den}).`,
+        frac1: { num: a, den: den },
+        frac2: { num: b, den: den },
+        fracOp: fracOp,
+        expectedNum: resultNum,
+        expectedDen: den,
+        correct: `${resultNum}/${den}`,
+        type: 'notebook',
+        op: 'frac',
+        fracType: 'ops'
+      };
     } else {
       const dens = [6, 8, 10, 12];
       const den = dens[Math.floor(Math.random() * dens.length)];
@@ -1828,7 +1831,13 @@ class QuestionGenerator {
   // RENDERIZADORES DIDÁCTICOS VECTORIALES (SVG 100% AUTÓNOMOS)
   // =================================================================
 
-  // 1. Fracción en Tarta/Pizza
+  static formatFractionsHTML(text) {
+    if (text === null || text === undefined) return '';
+    const s = String(text);
+    return s.replace(/\b(\d+)\/(\d+)\b/g, '<span class="frac"><span class="frac-num">$1</span><span class="frac-den">$2</span></span>');
+  }
+
+  // 1a. Fracción Circular (Pizza / Tarta)
   static renderFractionSVG(num, den) {
     const size = 130;
     const r = 52;
@@ -1843,14 +1852,35 @@ class QuestionGenerator {
       const y1 = cy + r * Math.sin(angle1);
       const x2 = cx + r * Math.cos(angle2);
       const y2 = cy + r * Math.sin(angle2);
-      const color = i < num ? '#f97316' : '#f1f5f9';
-      const stroke = '#cbd5e1';
+      const color = i < num ? '#f97316' : '#ffffff';
+      const stroke = '#1e293b';
 
       const d = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`;
-      paths += `<path d="${d}" fill="${color}" stroke="${stroke}" stroke-width="2" />`;
+      paths += `<path d="${d}" fill="${color}" stroke="${stroke}" stroke-width="2.5" />`;
     }
 
-    return `<svg class="math-svg-responsive" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${paths}</svg>`;
+    return `<div class="fraction-visual-container"><svg class="math-svg-responsive" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${paths}</svg></div>`;
+  }
+
+  // 1b. Fracción Rectangular (Barra de Fracciones escolar Edelvives)
+  static renderFractionBarSVG(num, den) {
+    const totalW = 280;
+    const totalH = 50;
+    const cellW = totalW / den;
+    let cells = '';
+
+    for (let i = 0; i < den; i++) {
+      const x = (i * cellW).toFixed(1);
+      const w = cellW.toFixed(1);
+      const fill = i < num ? '#f97316' : '#ffffff';
+      cells += `<rect x="${x}" y="0" width="${w}" height="${totalH}" fill="${fill}" stroke="#1e293b" stroke-width="2.5"/>`;
+    }
+
+    return `<div class="fraction-visual-container">
+      <svg class="math-svg-responsive" width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        ${cells}
+      </svg>
+    </div>`;
   }
 
   // 2. Cuadrícula de Coordenadas Cartesianas (X, Y)
@@ -3568,10 +3598,10 @@ class SmartickApp {
         } else if (e.key === 'Backspace' || e.key === 'Delete') {
           e.preventDefault();
           this.notebookKeypadBackspace();
-        } else if (e.key === 'ArrowLeft') {
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
           e.preventDefault();
           this.notebookKeypadNav(-1);
-        } else if (e.key === 'ArrowRight') {
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
           e.preventDefault();
           this.notebookKeypadNav(1);
         } else if (e.key === 'Enter') {
@@ -4238,6 +4268,12 @@ class SmartickApp {
     this.loadNextExercise();
   }
 
+  // Renderizador vertical escolar de fracciones (sustituye N/D por fracción apilada)
+  formatFractionsHTML(text) {
+    if (text === null || text === undefined) return '';
+    return QuestionGenerator.formatFractionsHTML(text);
+  }
+
   // Cargar Siguiente Ejercicio adaptado al nivel actual
   loadNextExercise() {
     if (this.session.mode !== 'speed' && this.session.currentIndex >= this.session.totalExercises) {
@@ -4345,7 +4381,7 @@ class SmartickApp {
     const topicBadge = document.getElementById('exercise-topic-badge');
     if (topicBadge) topicBadge.textContent = exercise.topic;
     const questEl = document.getElementById('exercise-question');
-    if (questEl) questEl.textContent = exercise.question;
+    if (questEl) questEl.innerHTML = this.formatFractionsHTML(exercise.question);
 
     const visualArea = document.getElementById('exercise-visual-area');
     if (visualArea) visualArea.innerHTML = exercise.visual || '';
@@ -4360,7 +4396,7 @@ class SmartickApp {
       exercise.options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'btn-option';
-        btn.textContent = opt;
+        btn.innerHTML = this.formatFractionsHTML(opt);
         btn.onclick = () => {
           this.sound.playPop();
           document.querySelectorAll('.btn-option').forEach(b => b.classList.remove('selected'));
@@ -4430,21 +4466,30 @@ class SmartickApp {
     const container = document.createElement('div');
     container.className = 'notebook-area';
 
-    // 1. Leyenda de Valor Posicional en una sola fila
+    // 1. Leyenda (adaptada a operaciones o fracciones)
     const legend = document.createElement('div');
-    legend.className = 'notebook-pv-legend';
-    legend.title = 'Código de Valor Posicional';
-    legend.innerHTML = `
-      <span class="pv-pill dm">DM</span>
-      <span class="pv-legend-sep">·</span>
-      <span class="pv-pill um">UM</span>
-      <span class="pv-legend-sep">·</span>
-      <span class="pv-pill c">C</span>
-      <span class="pv-legend-sep">·</span>
-      <span class="pv-pill d">D</span>
-      <span class="pv-legend-sep">·</span>
-      <span class="pv-pill u">U</span>
-    `;
+    if (exercise.op === 'frac') {
+      legend.className = 'notebook-pv-legend notebook-frac-legend';
+      legend.innerHTML = `
+        <span class="pv-pill c" style="background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:3px 10px; border-radius:12px; font-weight:800;">Numerador (arriba)</span>
+        <span class="pv-legend-sep">·</span>
+        <span class="pv-pill d" style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 10px; border-radius:12px; font-weight:800;">Denominador (abajo)</span>
+      `;
+    } else {
+      legend.className = 'notebook-pv-legend';
+      legend.title = 'Código de Valor Posicional';
+      legend.innerHTML = `
+        <span class="pv-pill dm">DM</span>
+        <span class="pv-legend-sep">·</span>
+        <span class="pv-pill um">UM</span>
+        <span class="pv-legend-sep">·</span>
+        <span class="pv-pill c">C</span>
+        <span class="pv-legend-sep">·</span>
+        <span class="pv-pill d">D</span>
+        <span class="pv-legend-sep">·</span>
+        <span class="pv-pill u">U</span>
+      `;
+    }
     container.appendChild(legend);
 
     // 2. Papel de cuaderno cuadriculado
@@ -4459,6 +4504,8 @@ class SmartickApp {
       this.buildMultiplicationNotebook(exercise, paper);
     } else if (exercise.op === 'div') {
       this.buildDivisionNotebook(exercise, paper);
+    } else if (exercise.op === 'frac') {
+      this.buildFractionNotebook(exercise, paper);
     }
 
     container.appendChild(paper);
@@ -5293,6 +5340,166 @@ class SmartickApp {
     this.session.notebookState.cellOrder = naturalOrder;
   }
 
+  buildFractionNotebook(exercise, paper) {
+    const wrap = document.createElement('div');
+    wrap.className = 'fraction-notebook-container';
+
+    if (exercise.fracType === 'ops') {
+      const opsRow = document.createElement('div');
+      opsRow.className = 'fraction-ops-container';
+
+      // Fracción 1 estática
+      const f1Box = document.createElement('div');
+      f1Box.className = 'fraction-display-static';
+      f1Box.innerHTML = `
+        <span class="frac-num-static">${exercise.frac1.num}</span>
+        <div class="frac-bar-static"></div>
+        <span class="frac-den-static">${exercise.frac1.den}</span>
+      `;
+      opsRow.appendChild(f1Box);
+
+      // Signo operador (+ o −)
+      const opSpan = document.createElement('span');
+      opSpan.className = 'fraction-op-symbol';
+      opSpan.textContent = exercise.fracOp;
+      opsRow.appendChild(opSpan);
+
+      // Fracción 2 estática
+      const f2Box = document.createElement('div');
+      f2Box.className = 'fraction-display-static';
+      f2Box.innerHTML = `
+        <span class="frac-num-static">${exercise.frac2.num}</span>
+        <div class="frac-bar-static"></div>
+        <span class="frac-den-static">${exercise.frac2.den}</span>
+      `;
+      opsRow.appendChild(f2Box);
+
+      // Signo igual (=)
+      const eqSpan = document.createElement('span');
+      eqSpan.className = 'fraction-op-symbol';
+      eqSpan.textContent = '=';
+      opsRow.appendChild(eqSpan);
+
+      // Fracción interactiva con numerador y denominador
+      const interactiveBox = document.createElement('div');
+      interactiveBox.className = 'fraction-interactive-box';
+
+      const numBtn = document.createElement('button');
+      numBtn.type = 'button';
+      numBtn.className = 'notebook-cell frac-input-cell';
+      numBtn.id = 'frac_num';
+      numBtn.title = 'Casilla del Numerador (arriba)';
+      numBtn.onclick = () => this.notebookFocusCell('frac_num');
+      interactiveBox.appendChild(numBtn);
+
+      const bar = document.createElement('div');
+      bar.className = 'notebook-frac-divider';
+      interactiveBox.appendChild(bar);
+
+      const denBtn = document.createElement('button');
+      denBtn.type = 'button';
+      denBtn.className = 'notebook-cell frac-input-cell';
+      denBtn.id = 'frac_den';
+      denBtn.title = 'Casilla del Denominador (abajo)';
+      denBtn.onclick = () => this.notebookFocusCell('frac_den');
+      interactiveBox.appendChild(denBtn);
+
+      opsRow.appendChild(interactiveBox);
+      wrap.appendChild(opsRow);
+
+      this.session.notebookState.cells['frac_num'] = {
+        id: 'frac_num',
+        element: numBtn,
+        expected: String(exercise.expectedNum),
+        value: '',
+        isOptional: false,
+        maxDigits: 2,
+        role: 'frac_num'
+      };
+      this.session.notebookState.cells['frac_den'] = {
+        id: 'frac_den',
+        element: denBtn,
+        expected: String(exercise.expectedDen),
+        value: '',
+        isOptional: false,
+        maxDigits: 2,
+        role: 'frac_den'
+      };
+      this.session.notebookState.cellOrder = ['frac_num', 'frac_den'];
+    } else {
+      // fraction_visual
+      const visBox = document.createElement('div');
+      visBox.className = 'fraction-visual-notebook-box';
+
+      const fracCol = document.createElement('div');
+      fracCol.className = 'frac-input-column';
+
+      // Fila Numerador
+      const numRow = document.createElement('div');
+      numRow.className = 'frac-slot-row';
+      const numBtn = document.createElement('button');
+      numBtn.type = 'button';
+      numBtn.className = 'notebook-cell frac-input-cell';
+      numBtn.id = 'frac_num';
+      numBtn.title = 'Casilla del Numerador (partes coloreadas)';
+      numBtn.onclick = () => this.notebookFocusCell('frac_num');
+      numRow.appendChild(numBtn);
+
+      const numLabel = document.createElement('span');
+      numLabel.className = 'frac-label-side';
+      numLabel.innerHTML = 'Numerador <small>(partes coloreadas)</small>';
+      numRow.appendChild(numLabel);
+      fracCol.appendChild(numRow);
+
+      // Barra de fracción
+      const bar = document.createElement('div');
+      bar.className = 'notebook-frac-divider';
+      fracCol.appendChild(bar);
+
+      // Fila Denominador
+      const denRow = document.createElement('div');
+      denRow.className = 'frac-slot-row';
+      const denBtn = document.createElement('button');
+      denBtn.type = 'button';
+      denBtn.className = 'notebook-cell frac-input-cell';
+      denBtn.id = 'frac_den';
+      denBtn.title = 'Casilla del Denominador (partes totales)';
+      denBtn.onclick = () => this.notebookFocusCell('frac_den');
+      denRow.appendChild(denBtn);
+
+      const denLabel = document.createElement('span');
+      denLabel.className = 'frac-label-side';
+      denLabel.innerHTML = 'Denominador <small>(partes totales)</small>';
+      denRow.appendChild(denLabel);
+      fracCol.appendChild(denRow);
+
+      visBox.appendChild(fracCol);
+      wrap.appendChild(visBox);
+
+      this.session.notebookState.cells['frac_num'] = {
+        id: 'frac_num',
+        element: numBtn,
+        expected: String(exercise.expectedNum),
+        value: '',
+        isOptional: false,
+        maxDigits: 2,
+        role: 'frac_num'
+      };
+      this.session.notebookState.cells['frac_den'] = {
+        id: 'frac_den',
+        element: denBtn,
+        expected: String(exercise.expectedDen),
+        value: '',
+        isOptional: false,
+        maxDigits: 2,
+        role: 'frac_den'
+      };
+      this.session.notebookState.cellOrder = ['frac_num', 'frac_den'];
+    }
+
+    paper.appendChild(wrap);
+  }
+
   notebookFocusCell(cellId) {
     const state = this.session && this.session.notebookState;
     if (!state) return;
@@ -5322,17 +5529,33 @@ class SmartickApp {
     }
     if (!cell) return;
 
-    cell.value = String(digit);
-    if (cell.element) {
-      cell.element.textContent = digit;
-      cell.element.classList.remove('cell-incorrect');
-    }
+    const maxDigits = cell.maxDigits || 1;
+    if (maxDigits > 1) {
+      let curVal = String(cell.value || '');
+      if (curVal.length >= maxDigits) {
+        curVal = String(digit);
+      } else {
+        curVal += String(digit);
+      }
+      cell.value = curVal;
+      if (cell.element) {
+        cell.element.textContent = curVal;
+        cell.element.classList.remove('cell-incorrect');
+      }
+      // No auto-avanzar tras 1 dígito si maxDigits > 1 para permitir 10 o 12
+    } else {
+      cell.value = String(digit);
+      if (cell.element) {
+        cell.element.textContent = digit;
+        cell.element.classList.remove('cell-incorrect');
+      }
 
-    // Auto-avance a la siguiente casilla en cellOrder
-    const curIdx = state.cellOrder.indexOf(cell.id);
-    if (curIdx >= 0 && curIdx < state.cellOrder.length - 1) {
-      const nextId = state.cellOrder[curIdx + 1];
-      this.notebookFocusCell(nextId);
+      // Auto-avance a la siguiente casilla en cellOrder
+      const curIdx = state.cellOrder.indexOf(cell.id);
+      if (curIdx >= 0 && curIdx < state.cellOrder.length - 1) {
+        const nextId = state.cellOrder[curIdx + 1];
+        this.notebookFocusCell(nextId);
+      }
     }
   }
 
@@ -5344,21 +5567,35 @@ class SmartickApp {
     const cell = state.activeCellId ? state.cells[state.activeCellId] : null;
     if (!cell) return;
 
-    if (cell.value !== '' && cell.value !== null && cell.value !== undefined) {
+    const curVal = String(cell.value || '');
+    if (curVal.length > 1) {
+      // Si tiene más de un dígito (ej. "12"), borrar solo el último dígito ("1")
+      cell.value = curVal.slice(0, -1);
+      if (cell.element) {
+        cell.element.textContent = cell.value;
+        cell.element.classList.remove('cell-incorrect');
+      }
+    } else if (curVal.length === 1) {
       cell.value = '';
       if (cell.element) {
         cell.element.textContent = '';
         cell.element.classList.remove('cell-incorrect');
       }
     } else {
+      // Si la casilla ya estaba vacía, retroceder a la anterior
       const curIdx = state.cellOrder.indexOf(cell.id);
       if (curIdx > 0) {
         const prevId = state.cellOrder[curIdx - 1];
         const prevCell = state.cells[prevId];
         if (prevCell) {
-          prevCell.value = '';
+          const prevVal = String(prevCell.value || '');
+          if (prevVal.length > 1) {
+            prevCell.value = prevVal.slice(0, -1);
+          } else {
+            prevCell.value = '';
+          }
           if (prevCell.element) {
-            prevCell.element.textContent = '';
+            prevCell.element.textContent = prevCell.value;
             prevCell.element.classList.remove('cell-incorrect');
           }
           this.notebookFocusCell(prevId);
@@ -5409,8 +5646,50 @@ class SmartickApp {
     if (hintBtn) hintBtn.classList.remove('hint-gentle-highlight');
     const box = document.getElementById('hint-box');
     const text = document.getElementById('hint-text');
-    if (text) text.textContent = this.session.currentExercise.hint || '¡Tómate tu tiempo y revisa la operación!';
+    if (text) text.innerHTML = this.formatFractionsHTML(this.session.currentExercise.hint || '¡Tómate tu tiempo y revisa la operación!');
     if (box) box.style.display = 'block';
+  }
+
+  fractionToSpokenSpanish(nStr, dStr) {
+    const n = parseInt(nStr, 10);
+    const d = parseInt(dStr, 10);
+    if (isNaN(n) || isNaN(d) || d === 0) return `${nStr} sobre ${dStr}`;
+
+    const denNamesSingular = {
+      2: 'medio',
+      3: 'tercio',
+      4: 'cuarto',
+      5: 'quinto',
+      6: 'sexto',
+      7: 'séptimo',
+      8: 'octavo',
+      9: 'noveno',
+      10: 'décimo',
+      11: 'onceavo',
+      12: 'doceavo'
+    };
+
+    const denNamesPlural = {
+      2: 'medios',
+      3: 'tercios',
+      4: 'cuartos',
+      5: 'quintos',
+      6: 'sextos',
+      7: 'séptimos',
+      8: 'octavos',
+      9: 'novenos',
+      10: 'décimos',
+      11: 'onceavos',
+      12: 'doceavos'
+    };
+
+    if (n === 1) {
+      const denWord = denNamesSingular[d] || `${d}-avo`;
+      return `un ${denWord}`;
+    } else {
+      const denWord = denNamesPlural[d] || `${d}-avos`;
+      return `${n} ${denWord}`;
+    }
   }
 
   readCurrentProblem() {
@@ -5419,9 +5698,23 @@ class SmartickApp {
       return;
     }
     window.speechSynthesis.cancel();
-    const ex = this.session.currentExercise;
+    const ex = this.session && this.session.currentExercise;
     if (!ex) return;
-    const utterance = new SpeechSynthesisUtterance(ex.question);
+
+    let text = ex.question || '';
+    // Reemplazar fracciones N/D con pronunciación escolar en español
+    text = text.replace(/\b(\d+)\/(\d+)\b/g, (match, n, d) => {
+      return this.fractionToSpokenSpanish(n, d);
+    });
+
+    // Sustituir signos matemáticos si están presentes para una dicción escolar fluida
+    text = text.replace(/−/g, ' menos ')
+               .replace(/\+/g, ' más ')
+               .replace(/=/g, ' igual a ')
+               .replace(/\s+/g, ' ')
+               .trim();
+
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'es-ES';
     utterance.rate = 0.95;
     window.speechSynthesis.speak(utterance);
@@ -5451,7 +5744,10 @@ class SmartickApp {
 
       if (firstEmptyId) {
         this.sound.playWrong();
-        this.showToast('¡Rellena todas las casillas del cuaderno antes de comprobar!', '✏️', '#f59e0b');
+        const emptyMsg = (ex.op === 'frac')
+          ? '¡Rellena el numerador y el denominador antes de comprobar!'
+          : '¡Rellena todas las casillas del cuaderno antes de comprobar!';
+        this.showToast(emptyMsg, '✏️', '#f59e0b');
         this.notebookFocusCell(firstEmptyId);
         return;
       }
@@ -5467,7 +5763,11 @@ class SmartickApp {
         const expected = String(cell.expected || '');
         const el = cell.element;
 
-        if (actual === expected) {
+        const isCellCorrect = (ex.op === 'frac')
+          ? (parseInt(actual, 10) === parseInt(expected, 10))
+          : (actual === expected);
+
+        if (isCellCorrect) {
           if (el) {
             el.classList.add('cell-correct');
             el.classList.remove('cell-incorrect');
@@ -5492,7 +5792,15 @@ class SmartickApp {
 
       if (!allCorrect) {
         let helpfulHint = ex.hint || '¡Revisa los números con calma!';
-        if (ex.op === 'add') {
+        if (ex.op === 'frac') {
+          if (wrongRole === 'frac_num' || wrongRole === 'num') {
+            helpfulHint = 'Revisa el numerador (arriba): en sumas o restas se operan los numeradores; en el dibujo son las partes coloreadas.';
+          } else if (wrongRole === 'frac_den' || wrongRole === 'den') {
+            helpfulHint = 'Revisa el denominador (abajo): en sumas o restas con igual denominador se mantiene; en el dibujo es el total de partes.';
+          } else {
+            helpfulHint = 'Revisa el numerador (arriba) y el denominador (abajo) con calma.';
+          }
+        } else if (ex.op === 'add') {
           helpfulHint = 'Revisa la suma columna a columna. ¡No olvides sumar la cifra que te llevas!';
         } else if (ex.op === 'sub') {
           helpfulHint = 'Revisa la resta. Si la cifra superior es menor que la inferior, pide prestada una decena.';
@@ -5514,7 +5822,7 @@ class SmartickApp {
 
         const hintBox = document.getElementById('hint-box');
         const hintText = document.getElementById('hint-text');
-        if (hintText) hintText.textContent = helpfulHint;
+        if (hintText) hintText.innerHTML = this.formatFractionsHTML(helpfulHint);
         if (hintBox) hintBox.style.display = 'block';
 
         if (firstWrongId) this.notebookFocusCell(firstWrongId);
@@ -5753,9 +6061,10 @@ class SmartickApp {
         if (this.session && this.session.currentExercise && this.session.currentExercise.op === 'div') {
           const quotientAns = this.session.currentExercise.correct;
           const remainderAns = this.session.currentExercise.dividend % this.session.currentExercise.divisor;
-          msg.textContent = `La respuesta correcta era: Cociente ${quotientAns} y Resto ${remainderAns}. ¡Revisa la pista y sigue practicando!`;
+          msg.innerHTML = `La respuesta correcta era: Cociente ${quotientAns} y Resto ${remainderAns}. ¡Revisa la pista y sigue practicando!`;
         } else {
-          msg.textContent = `La respuesta correcta era: ${this.session.currentExercise.correct}. ¡Revisa la pista y sigue practicando!`;
+          const corrFormatted = this.formatFractionsHTML(String(this.session.currentExercise.correct));
+          msg.innerHTML = `La respuesta correcta era: ${corrFormatted}. ¡Revisa la pista y sigue practicando!`;
         }
       }
       if (reward) reward.style.display = 'none';

@@ -1458,23 +1458,72 @@ body {
   flex-wrap: wrap;
 }
 
+/* Fracciones verticales apiladas escolares (Edelvives 4.º Primaria) */
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  line-height: 1.05;
+  margin: 0 4px;
+  font-weight: 800;
+  font-size: 1.05em;
+}
+
+.frac-num {
+  border-bottom: 2.5px solid currentColor;
+  padding: 0 5px 2px 5px;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+.frac-den {
+  padding: 2px 5px 0 5px;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+/* Fracciones en el enunciado principal h2 */
+#exercise-question .frac {
+  font-size: 1.25em;
+  margin: 0 6px;
+}
+
+/* Fracciones en los botones de opciones */
+.btn-option .frac {
+  font-size: 1.35rem;
+  margin: 0 6px;
+}
+
+/* Fracciones en pistas y modales */
+#hint-text .frac,
+#feedback-message .frac {
+  font-size: 1.15em;
+  margin: 0 4px;
+}
+
+/* Compatibilidad .fraction-badge */
 .fraction-badge {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   vertical-align: middle;
-  font-size: 1.5rem;
-  font-weight: 800;
+  line-height: 1.05;
   margin: 0 6px;
+  font-weight: 800;
 }
-
 .fraction-badge .num {
-  border-bottom: 3px solid currentColor;
-  padding: 0 4px;
+  border-bottom: 2.5px solid currentColor;
+  padding: 0 5px 2px 5px;
+  width: 100%;
+  text-align: center;
 }
-
 .fraction-badge .den {
-  padding: 0 4px;
+  padding: 2px 5px 0 5px;
+  width: 100%;
+  text-align: center;
 }
 
 /* Cajas de descomposición numérica (DM, UM, C, D, U) */
@@ -3831,6 +3880,137 @@ body {
 .cell-remainder.cell-active {
   border-color: #d97706 !important;
   box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.35) !important;
+}
+
+/* Casilla amplia para fracciones (acepta 1 o 2 dígitos como 10 o 12) */
+.notebook-cell.frac-input-cell {
+  min-width: 68px;
+  height: 54px;
+  font-size: 1.85rem;
+  font-weight: 900;
+  padding: 0 6px;
+  border-width: 2.5px;
+}
+
+/* Modo Cuaderno de Fracciones */
+.fraction-notebook-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.fraction-ops-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 8px auto;
+}
+
+.fraction-display-static {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+}
+
+.frac-num-static,
+.frac-den-static {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.1;
+  text-align: center;
+  padding: 2px 8px;
+}
+
+.frac-bar-static {
+  height: 4px;
+  background: #1e293b;
+  border-radius: 2px;
+  width: 100%;
+  min-width: 46px;
+  margin: 3px 0;
+}
+
+.fraction-op-symbol {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #2563eb;
+  user-select: none;
+  margin: 0 4px;
+}
+
+.fraction-interactive-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+}
+
+.notebook-frac-divider {
+  height: 4.5px;
+  background: #1e293b;
+  border-radius: 2px;
+  width: 100%;
+  min-width: 68px;
+  margin: 6px 0;
+}
+
+.fraction-visual-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+}
+
+.fraction-visual-notebook-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 8px;
+  margin: 0 auto;
+}
+
+.frac-input-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 80px;
+}
+
+.frac-input-column .notebook-frac-divider {
+  width: 68px;
+}
+
+.frac-slot-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.frac-label-side {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.frac-label-side small {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: none;
+  display: block;
 }
 
 /* Teclado Táctil en Pantalla para Tablet (0-9, Nav y Borrar) */
